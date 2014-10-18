@@ -1,2 +1,3 @@
-*.swp
-jarvis_perception/*.swp
+**/*.swp
+**/*.pyc
+**/test*

@@ -11,7 +11,7 @@ def return_grips_client():
     try:
         grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
         grips = grip_server()
-        return grips
+        return grips.grips
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
@@ -22,6 +22,5 @@ if __name__ == "__main__":
     grips = return_grips_client()
     print "Requesting grips"
     print type(grips)
-    print type(grips.grips)
-    print type(grips.grips.poses[1])
-    print "grip2 quaternion = " +str(grips.grips.poses[1].orientation)
+    print type(grips.poses[1])
+    print "grip2 quaternion = " +str(grips.poses[1].orientation)

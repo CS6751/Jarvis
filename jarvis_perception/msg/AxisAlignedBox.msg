@@ -5,7 +5,7 @@ Header header
 string name
 #Pose in the global frame
 geometry_msgs/Pose pose
-int64 w
-int64 l
-int64 h
+float64 w
+float64 l
+float64 h
 
