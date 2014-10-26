@@ -6,7 +6,8 @@ from jarvis_perception import get_box
 
 
 def object_publisher():
-    rospy.init_node('object_publsiher')
+    rospy.init_node('object_publisher')
+    print 'Starting object_publisher node'
     objects = ['target','hand','finger']
     topics = []
     for obj in objects:
@@ -16,7 +17,7 @@ def object_publisher():
     while not rospy.is_shutdown():
         for idx, val in enumerate(objects):
             box = get_box.get_box(objects[idx],0)
-            rospy.loginfo(box)
+           # rospy.loginfo(box)
             topics[idx].publish(box)
             r.sleep()
 

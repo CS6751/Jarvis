@@ -4,6 +4,7 @@ import math
 import jarvis_perception.msg
 import geometry_msgs.msg
 
+# This is a stub file that generates a random AxisAlignedBox()
 def get_box(name, use_image_processing):
     if (use_image_processing == 1):
     #Do some image processing shenanigans to get the bounding box
