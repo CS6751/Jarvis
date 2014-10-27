@@ -2,7 +2,7 @@
 
 import rospy
 from geometry_msgs.msg import Pose2D
-from grasp.msg import goal_pose, grasp_point, grasp_points
+from jarvis_grasp.msg import goal_pose, grasp_point, grasp_points
 
 class Pose_Generator:
     def __init__(self):

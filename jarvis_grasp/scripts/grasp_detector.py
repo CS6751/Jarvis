@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
-from grasp.msg import grasp_status
+from jarvis_grasp.msg import grasp_status
 
 def grasp_detector():
     rospy.init_node('grasp_detector', anonymous=True)
