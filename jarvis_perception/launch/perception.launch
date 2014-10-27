@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="jarvis_perception" name="object_publisher" type="object_publisher.py"/>
+    <node pkg="jarvis_perception" name="grip_server" type="grip_server.py"/>
+</launch>
