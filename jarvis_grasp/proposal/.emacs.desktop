@@ -1,0 +1,51 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri Oct 24 12:59:04 2014
+;; Desktop file format version 206
+;; Emacs version 23.3.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("mygreen" "mygr" "myg" "mygr" "mygreen"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/Dropbox/School/MAE6949/hw10/references.bib" "~/Dropbox/School/MAE6949/hw9/presentation.tex" "~/Dropbox/School/MAE6949/hw10/references.bib" "~/Dropbox/School/MAE6949/hw9/presentation.tex" "~/Dropbox/School/MAE6949/hw9/presentation_2.tex" "~/Dropbox/School/MAE6949/hw3/elhage_hwk3.tex" "~/Dropbox/School/MAE6949/hw10/proposal.tex" "~/Dropbox/School/MAE6949/hw10" "~/Jarvis/src/grasp/proposal/" "~/Jarvis/src/grasp/proposal/references.bib" "~/Jarvis/src/grasp/proposal/proposal.tex" "~/Dropbox/School/CS6751/references.bib" "~/Dropbox/School/CS6751/summary.bib" "~/Dropbox/School/CS6751/references.bib" "~/Dropbox/School/CS6751/summary.tex" "~/Dropbox/School/MAE6949/hw3/elhage_hwk3.tex" "~/Dropbox/School/MAE6949/hw6/elhage_hwk6.tex" "~/Dropbox/School/MAE6949/hw6" "~/Dropbox/School/MAE6949/hw3/elhage_hwk3.tex" "~/Dropbox/School/MAE6949/hw5/elhage_hwk5.tex" "~/Dropbox/School/MAE6949/hw1/elhage_hwk1.tex" "~/Dropbox/School/MAE6949/hw5/elhage_hwk5.tex" "~/Dropbox/School/MAE6949/hw5" "~/Dropbox/School/MAE6949/hw4/elhage_hwk4.tex" "~/Dropbox/School/MAE6949/hw2/elhage_hwk2.tex" "~/Dropbox/School/MAE6949/hw4" "~/Dropbox/School/MAE6949/hw3/elhage_hwk3.tex" "~/Dropbox/School/MAE6949/hw3/" "~/Dropbox/Applications/sop/research_cornell.tex" "~/Dropbox/School/MAE6949/hw2/elhage_hwk2.tex"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/alex/Dropbox/School/MAE6949/hw10/proposal.tex"
+  "proposal.tex"
+  'latex-mode
+  '(auto-fill-mode flyspell-mode)
+  627
+  '(2732 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  "/home/alex/Dropbox/School/MAE6949/hw10/references.bib"
+  "references.bib"
+  'bibtex-mode
+  '(auto-fill-mode)
+  19
+  '(2572 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix)))
+
+(desktop-create-buffer 206
+  "/home/alex/Dropbox/School/MAE6949/hw9/presentation.tex"
+  "presentation.tex"
+  'latex-mode
+  '(auto-fill-mode flyspell-mode)
+  8927
+  '(10969 nil)
+  nil
+  nil
+  '((indent-tabs-mode) (buffer-file-coding-system . undecided-unix) (overwrite-mode)))
+

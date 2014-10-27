@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="jarvis_grasp" name="grasp_detector" type="grasp_detector.py"/>
+    <node pkg="jarvis_grasp" name="pose_generator" type="pose_generator.py"/>
+</launch>
