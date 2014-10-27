@@ -51,6 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    AxisAlignedBox.msg
    GraspBox.msg
+   GraspArray.msg
  )
 
 ## Generate services in the 'srv' folder

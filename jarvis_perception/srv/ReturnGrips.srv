@@ -1,2 +1,2 @@
 ---
-geometry_msgs/PoseArray grips
+jarvis_perception/GraspArray grips
