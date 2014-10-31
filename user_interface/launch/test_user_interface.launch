@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="user_interface" name="test_perception_server" type="test_perception_server.py"/>
+    <node pkg="user_interface" name="UI_client" type="UI_client.py"/>
+    <node pkg="user_interface" name="UI_command_pub" type="UI_command_pub.py"/>
+    <node pkg="user_interface" name="UI_grip_pub" type="UI_grip_pub.py"/>
+</launch>
