@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import rospy
 import geometry_msgs.msg
-import user_interface.msg
+from jarvis_perception.msg import GraspBox
+from jarvis_perception.msg import GraspArray
 import math
 
 
@@ -9,17 +10,16 @@ def updateWeights(grips):
     newWeight1 = 0.3
     newWeight2 = 0.7
 
-    point1 = grips[0].Point
-    quat1 = grips[0].Quaternion
-    weight1 = newWeight1 * grips[0].Weight
-    grip1 = user_interface.msg.GraspBox(point1,quat1,weight1)
+    oldGrips = grips.grips.grasps
+    # print "%s"%oldGrips[0]
 
-    point2 = grips[1].Point
-    quat2 = grips[1].Quaternion
-    weight2 = newWeight2 * grips[1].Weight
-    grip2 = user_interface.msg.GraspBox(point2,quat2,weight2)
+    weight1 = newWeight1 * oldGrips[0].weight
+    grip1 = GraspBox(oldGrips[0].point,oldGrips[0].orientation,weight1)
 
-    newgrips = user_interface.msg.GraspArray()
+    weight2 = newWeight2 * oldGrips[1].weight
+    grip2 = GraspBox(oldGrips[1].point,oldGrips[1].orientation,weight2)
+
+    newgrips = GraspArray()
     newgrips.grasps.append(grip1)
     newgrips.grasps.append(grip2)
 
