@@ -2,12 +2,13 @@
 
 import rospy
 from geometry_msgs.msg import Pose2D
-from jarvis_grasp.msg import goal_pose, grasp_point, grasp_points
+from jarvis_grasp.msg import goal_pose
+from jarvis_perception.msg import GraspArray, GraspBox
 
 class Pose_Generator:
     def __init__(self):
         self.pub = rospy.Publisher('goal_pose', goal_pose, queue_size=10)
-        rospy.Subscriber('grasp', grasp_points, self.callback)
+        rospy.Subscriber('grasp', GraspArray, self.callback)
 
     def callback(self, msg):
         msg = goal_pose()

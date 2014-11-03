@@ -12,15 +12,6 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
-
-
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
 ################################################
 ## Declare ROS messages, services and actions ##
 ################################################
@@ -49,8 +40,6 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
   FILES
   goal_pose.msg
-  grasp_point.msg
-  grasp_points.msg
   grasp_status.msg
 )
 
@@ -72,6 +61,7 @@ add_message_files(
 generate_messages(
   DEPENDENCIES
   std_msgs
+  jarvis_perception
   geometry_msgs
 )
 
@@ -85,10 +75,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES grasp
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+# INCLUDE_DIRS include
+# LIBRARIES grasp
+  CATKIN_DEPENDS roscpp rospy std_msgs jarvis_perception
+  DEPENDS system_lib
 )
 
 ###########
