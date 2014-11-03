@@ -2,4 +2,5 @@
 <launch>
     <!-- put your launch files here -->
     <include file="$(find jarvis_perception)/launch/perception.launch"/>
+    <include file="$(find jarvis_grasp)/launch/grasp_stub.launch" />
 </launch>
