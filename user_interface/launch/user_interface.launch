@@ -1,4 +1,4 @@
 <launch>
-    <node pkg="user_interface" name="UI_client" type="UI_client.py"/>
+    <node pkg="user_interface" name="UI_client" type="UI_client.py" output="screen"/>
     <node pkg="user_interface" name="UI_command_pub" type="UI_command_pub.py"/>
 </launch>
