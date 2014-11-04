@@ -90,7 +90,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
   LIBRARIES jarvis_controls
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tf geometry_msgs moveit_msgs sensor_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tf geometry_msgs sensor_msgs
   DEPENDS system_lib
 )
 
