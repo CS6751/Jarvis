@@ -4,4 +4,5 @@
     <include file="$(find jarvis_perception)/launch/perception.launch"/>
     <include file="$(find jarvis_grasp)/launch/grasp_stub.launch" />
     <include file="$(find user_interface)/launch/user_interface.launch"/>
+    <include file="$(find jarvis_controls)/launch/controls.launch"/>
 </launch>
