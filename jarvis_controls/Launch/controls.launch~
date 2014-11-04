@@ -1,3 +1,4 @@
 <launch>
-<node pkg="jarvis_controls" name="controls_listener" type="base_control.py"/>
+<node pkg="jarvis_controls" name="controls_listener" type="controls_listener.py" output="screen"/>
+<node pkg="jarvis_controls" name="Kill" type="test_publisher.py"/>
 </launch>
