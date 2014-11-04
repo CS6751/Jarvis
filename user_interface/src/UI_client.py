@@ -1,27 +1,40 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 
 import sys
 import rospy
-from user_interface.srv import *
+from jarvis_perception import *
+import geometry_msgs
+from jarvis_perception.srv import *
+import jarvis_perception.msg
+import updateWeights
 
-def grip_loc_client(x, y):
-    rospy.wait_for_service('grip_loc')
+def return_grips_client():
+    rospy.wait_for_service('return_grips')
     try:
-        grip_loc = rospy.ServiceProxy('grip_loc', GripLoc)
-        resp1 = grip_loc(x, y)
-        return resp1.sum
+        grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
+        grips = grip_server()
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
+    #now, update the weights and publish the result
+    try:
+        pub = rospy.Publisher('chatter', jarvis_perception.msg.GraspArray, queue_size=10)
+        rospy.init_node('UI_grip_pub', anonymous=True)
+        r = rospy.Rate(10) # 10hz
+        while not rospy.is_shutdown():
+            gripsWithUpdatedWeights = updateWeights.updateWeights(grips)
+            rospy.loginfo(gripsWithUpdatedWeights)
+            pub.publish(gripsWithUpdatedWeights)
+            return grips.grips
+            r.sleep()
+    except rospy.ROSInterruptException: pass 
+
 def usage():
-    return "%s [x y]"%sys.argv[0]
+    return "requests grip positions/weights from the perception module"
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3:
-        x = int(sys.argv[1])
-        y = int(sys.argv[2])
-    else:
-        print usage()
-        sys.exit(1)
-    print "Requesting %s+%s"%(x, y)
-    print "%s + %s = %s"%(x, y, grip_loc_client(x, y))
+    grips = return_grips_client()
+    print "Requesting grips"
+    print type(grips)
+    print type(grips.grasps[1])
+    print "grip2 quaternion = " +str(grips.grasps[1].orientation)
