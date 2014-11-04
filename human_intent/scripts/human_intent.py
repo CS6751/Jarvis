@@ -37,16 +37,16 @@
 ## to the 'chatter' topic
 
 import rospy
-from std_msgs.msg import String
+from intent.msg import Intent
 
-def talker():
-    pub = rospy.Publisher('chatter', String, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
+def human_intent():
+    pub = rospy.Publisher('intents', Intent, queue_size=10)
+    rospy.init_node('human_intent', anonymous=True)
     r = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
-        str = "hello world %s"%rospy.get_time()
-        rospy.loginfo(str)
-        pub.publish(str)
+        inte = Intent()
+	inte.Intent = 1
+        pub.publish(inte)
         r.sleep()
         
 if __name__ == '__main__':
