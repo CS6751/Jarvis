@@ -11,6 +11,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   message_generation
   geometry_msgs
+  sensor_msgs
+  #moveit_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -72,7 +74,7 @@ find_package(catkin REQUIRED COMPONENTS
    DEPENDENCIES
    std_msgs
    geometry_msgs
-   moveit_msgs
+   #moveit_msgs
    sensor_msgs
  )
 
