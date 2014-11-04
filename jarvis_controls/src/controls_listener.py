@@ -5,8 +5,11 @@
 import rospy
 
 #Kill and Mode
-from jarvis_controls.msg import Kill #These will need to be changed probably.
-from jarvis_controls.msg import Mode
+#from jarvis_controls.msg import Kill #These are for my internal tests
+#from jarvis_controls.msg import Mode
+
+from jarvis_executive.msg import Kill
+from jarvis_executive.msg import Mode
 
 #For trajectories:
 #from moveit_msgs.msg import RobotTrajectory  ---- temp removed
