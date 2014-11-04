@@ -9,7 +9,7 @@ from jarvis_controls.msg import Kill #These will need to be changed probably.
 from jarvis_controls.msg import Mode
 
 #For trajectories:
-from moveit_msgs.msg import RobotTrajectory
+#from moveit_msgs.msg import RobotTrajectory  ---- temp removed
 import geometry_msgs.msg
 
 #For robot pose:
@@ -43,7 +43,7 @@ def controls_listener():
 #Mode message subscribe
     rospy.Subscriber('Mode',Mode,modecallback)	
 #Trajectory message subscribe
-    rospy.Subscriber('PlannedTrajectory',RobotTrajectory,trajcallback)	
+    #rospy.Subscriber('PlannedTrajectory',RobotTrajectory,trajcallback)	
 #Pose message subscribe
     rospy.Subscriber('joint_states',JointStates,posecallback)
 

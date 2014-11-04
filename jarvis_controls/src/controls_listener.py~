@@ -5,7 +5,7 @@
 import rospy
 
 #Kill and Mode
-from jarvis_controls.msg import Kill
+from jarvis_controls.msg import Kill #These will need to be changed probably.
 from jarvis_controls.msg import Mode
 
 #For trajectories:
