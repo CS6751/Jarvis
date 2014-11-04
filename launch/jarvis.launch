@@ -5,6 +5,6 @@
     <include file="$(find jarvis_grasp)/launch/grasp_stub.launch" />
     <include file="$(find user_interface)/launch/user_interface.launch"/>
     <include file="$(find jarvis_executive)/launch/executive.launch"/>
-    <include file="$(find jarvis_controls)/launch/controls.launch"/>
+    <include file="$(find jarvis_controls)/Launch/controls.launch"/>
     <include file="$(find human_intent)/launch/human_intent.launch"/>
 </launch>
