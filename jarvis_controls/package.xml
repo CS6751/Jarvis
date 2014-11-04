@@ -48,6 +48,7 @@
   <build_depend>geometry_msgs</build_depend>
   <!--<build_depend>moveit_msgs</build_depend> temp removed -->
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>jarvis_executive</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
@@ -57,6 +58,7 @@
   <run_depend>geometry_msgs</run_depend>
   <!-- <build_depend>moveit_msgs</build_depend> temp removed -->
   <run_depend>sensor_msgs</run_depend>
+  <run_depend>jarvis_executive</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

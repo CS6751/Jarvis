@@ -48,7 +48,7 @@ def controls_listener():
 #Trajectory message subscribe
     #rospy.Subscriber('PlannedTrajectory',RobotTrajectory,trajcallback)	
 #Pose message subscribe
-    rospy.Subscriber('joint_states',JointStates,posecallback)
+    rospy.Subscriber('joint_states',JointState,posecallback)
 
     rospy.spin()
         
