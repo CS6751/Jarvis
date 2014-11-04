@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(humanIntent)
+project(human_intent)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -98,19 +98,19 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(humanIntent
-#   src/${PROJECT_NAME}/humanIntent.cpp
+# add_library(human_intent
+#   src/${PROJECT_NAME}/human_intent.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(humanIntent_node src/humanIntent_node.cpp)
+# add_executable(human_intent_node src/human_intent_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(humanIntent_node humanIntent_generate_messages_cpp)
+# add_dependencies(human_intent_node human_intent_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(humanIntent_node
+# target_link_libraries(human_intent_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -129,7 +129,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS humanIntent humanIntent_node
+# install(TARGETS human_intent human_intent_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -154,7 +154,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_humanIntent.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_human_intent.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
