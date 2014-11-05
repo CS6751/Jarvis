@@ -63,8 +63,11 @@ def TrajectoryGenerator():
         msg2.kill = False
 
 	pub0.publish(msg0)
+        print 'Publishing trajectories'
         pub1.publish(msg1)
+        print 'publishing current Plan Status'
         pub2.publish(msg2)
+        print 'publishing Kill Status wrt Planner'
         r.sleep
 
 if __name__ == '__main__':
