@@ -5,7 +5,7 @@ from jarvis_grasp.msg import goal_pose #Alex
 from geometry_msgs.msg import Pose2D #robot state from ROS, need conf
 from jarvis_executive.msg import PlanCommand #Elijah
 from jarvis_planner.msg import Trajectories, PlanStatus
-from jarvis_perception.msg import objects
+from jarvis_perception.msg import AxisAlignedBox
 from sensor_msgs.msg import JointState
 
 # perception/map data??
