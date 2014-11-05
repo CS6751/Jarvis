@@ -9,6 +9,10 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  tf
+  geometry_msgs
+  moveit_msgs
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,6 +53,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    Trajectories.msg
    PlanStatus.msg
+   Kill.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -69,6 +74,10 @@ find_package(catkin REQUIRED COMPONENTS
  generate_messages(
    DEPENDENCIES
    std_msgs
+   geometry_msgs
+   moveit_msgs
+   sensor_msgs
+   
  )
 
 ###################################
@@ -82,9 +91,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES jarvis_planner
-#  CATKIN_DEPENDS roscpp rospy std_msgs
-#  DEPENDS system_lib
+  LIBRARIES jarvis_planner
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tf geometry_msgs moveit_msgs sensor_msgs
+  DEPENDS system_lib
 )
 
 ###########
