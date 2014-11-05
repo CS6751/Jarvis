@@ -1,1 +1,1 @@
-bool kill
+bool Kill
