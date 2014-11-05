@@ -7,5 +7,5 @@
     <include file="$(find jarvis_executive)/launch/executive.launch"/>
     <include file="$(find jarvis_controls)/Launch/controls.launch"/>
     <include file="$(find human_intent)/launch/human_intent.launch"/>
-    <include file="$(find jarvis_planner)/launch/planner.launch"/>
+    <!--    <include file="$(find jarvis_planner)/launch/planner.launch"/>-->
 </launch>
