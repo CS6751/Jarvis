@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(human_intent)
+project(jarvis_planner)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -47,7 +47,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   Intent.msg
+   Trajectories.msg
+   PlanStatus.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -81,9 +82,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
- LIBRARIES human_intent
- CATKIN_DEPENDS roscpp rospy std_msgs
- DEPENDS system_lib
+#  LIBRARIES jarvis_planner
+#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  DEPENDS system_lib
 )
 
 ###########
@@ -98,19 +99,19 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(human_intent
-#   src/${PROJECT_NAME}/human_intent.cpp
+# add_library(jarvis_planner
+#   src/${PROJECT_NAME}/jarvis_planner.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(human_intent_node src/human_intent_node.cpp)
+# add_executable(jarvis_planner_node src/jarvis_planner_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(human_intent_node human_intent_generate_messages_cpp)
+# add_dependencies(jarvis_planner_node jarvis_planner_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(human_intent_node
+# target_link_libraries(jarvis_planner_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -129,7 +130,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS human_intent human_intent_node
+# install(TARGETS jarvis_planner jarvis_planner_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -154,7 +155,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_human_intent.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_jarvis_planner.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

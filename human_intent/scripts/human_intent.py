@@ -37,19 +37,19 @@
 ## to the 'chatter' topic
 
 import rospy
-from intent.msg import Intent
+from std_msgs.msg import String
 
 def human_intent():
-    pub = rospy.Publisher('intents', Intent, queue_size=10)
+    pub = rospy.Publisher('intents', String, queue_size=10)
     rospy.init_node('human_intent', anonymous=True)
     r = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
-        inte = Intent()
-	inte.Intent = 1
+        inte = String()
+     	inte = "sdafsada"
         pub.publish(inte)
         r.sleep()
         
 if __name__ == '__main__':
     try:
-        talker()
+        human_intent()
     except rospy.ROSInterruptException: pass

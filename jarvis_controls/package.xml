@@ -46,18 +46,29 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>tf</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>moveit_msgs</build_depend>
+  <!--<build_depend>moveit_msgs</build_depend> temp removed -->
   <build_depend>sensor_msgs</build_depend>
+<<<<<<< HEAD
   <build_depend>moveit_msgs</build_depend>
  
+=======
+  <build_depend>jarvis_executive</build_depend>
+
+>>>>>>> 080fa24db843b0e718d27bdb96303bcc8ae66f3e
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>message_runtime</run_depend>
   <run_depend>tf</run_depend>
   <run_depend>geometry_msgs</run_depend>
+<<<<<<< HEAD
   <run_depend>moveit_msgs</run_depend>
   <run_depend>sensor_msgs</run_depend>
+=======
+  <!-- <build_depend>moveit_msgs</build_depend> temp removed -->
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>jarvis_executive</run_depend>
+>>>>>>> 080fa24db843b0e718d27bdb96303bcc8ae66f3e
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
