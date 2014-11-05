@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   message_generation
   geometry_msgs
+  moveit_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -88,7 +89,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
   LIBRARIES jarvis_controls
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tf geometry_msgs moveit_msgs sensor_msgs
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tf geometry_msgs moveit_msgs sensor_msgs moveit_msgs
   DEPENDS system_lib
 )
 
