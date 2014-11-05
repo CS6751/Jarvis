@@ -10,51 +10,61 @@ from sensor_msgs.msg import JointState
 
 # perception/map data??
 
+def posecallback(data):
+    print 'Planner says: Got the Pose'
+
+def commandcallback(data):
+    print 'Planner says: Got a Plan Commad'
+
+def objeectscallback(data):
+    print 'Planner says: Got the position of the human hand'
+
+def jointscallback(data):
+    print 'Planner says: Got the joint angle positions'
+
+def killcallback(data):
+    print 'Planner says: Got Kill Status'
+
 
 def TrajectoryGenerator():
     rospy.init_node('TrajectoryGenerator',anonymous=True)
-    self.pub = rospy.Publisher('PlannedTrajectory',Trajectories, queue_size=10)
-    self.pub = rospy.Publisher('PlanStatus',PlanStatus, queue_size=10)
-    self.pub = rospy.Publisher('Kill',Kill, queue_size=10)
+    print 'initializing planner node'    
 
-    rospy.Subscriber('goal_pose', goal_pose, self.callback)
-    rospy.Subscriber('PlanCommand',PlanCommand, self.callback)
-    rospy.Subscriber('objects',AxisAlignedBox, self.callback)
-    rospy.Subscriber('joint_states',JointState, self.callback)
+    pub0 = rospy.Publisher('PlannedTrajectory',Trajectories, queue_size=10)
+    pub1 = rospy.Publisher('PlanStatus',PlanStatus, queue_size=10)
+    pub2 = rospy.Publisher('Kill',Kill, queue_size=10)
 
-    def callback(self,msg):
-	msg = Trajectories()
-		
-	msg.ArmJointPositions=[0,0,0,0,0]
-	msg.ArmJointVelocities=[0,0,0,0,0]
-	msg.BasePositions=[[0],[.1]]
-	msg.BaseOrientations=[.5]
-	msg.BaseLinVelocities=[[0.2],[.1]]
-	msg.BaseRotVelocities=[0]
-	msg.time_from_start=.2
+    rospy.Subscriber('goal_pose', goal_pose, posecallback)
+    rospy.Subscriber('PlanCommand',PlanCommand, commandcallback)
+    rospy.Subscriber('objects',AxisAlignedBox, objectscallback)
+    rospy.Subscriber('joint_states',JointState, jointscallback)
+    rospy.Subscriber('Kill',Kill,killcallback)
+
+    r = rospy.Rate(10)
+    while not rospy.is_shutdown():
+        msg0.ArmJointPositions=[0,0,0,0,0]
+	msg0.ArmJointVelocities=[0,0,0,0,0]
+	msg0.BasePositions=[[0],[.1]]
+	msg0.BaseOrientations=[.5]
+	msg0.BaseLinVelocities=[[0.2],[.1]]
+	msg0.BaseRotVelocities=[0]
+	msg0.time_from_start=.2
 	    
-	self.pub.publish(msg)
+        msg1.PlanStatus = False
 
-    def callback(self,msg):
-	msg.PlanStatus()
-	    
-	msg.PlanStatus=False
+        msg2.Kill = False
 
-	self.pub.publish(msg)
+	pub0.publish(msg0)
+        pub1.publish(msg1)
+        pub2.publish(msg2)
+        r.sleep
 
-    def callback(self,msg):
-        msg.Kill()
-                 
-        msg.Kill=False
-	    
-
-
-    if __name__ == '__main__':
-       try:
-         rospy.init_node('TrajectoryGenerator', anonymous = True)
-         TrajectoryGenerator()
-         rospy.spin()
-       except rospy.ROSInterruptException: pass
+  if __name__ == '__main__':
+     try:
+       rospy.init_node('TrajectoryGenerator', anonymous = True)
+       TrajectoryGenerator()
+       rospy.spin()
+     except rospy.ROSInterruptException: pass
 
 
     
