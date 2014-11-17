@@ -10,6 +10,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   message_generation
+  youbot_arm_kinematics
+  urdf
+  roslib
 )
 
 ################################################
@@ -97,17 +100,17 @@ include_directories(
 #   src/${PROJECT_NAME}/grasp.cpp
 # )
 
-## Declare a cpp executable
-# add_executable(grasp_node src/grasp_node.cpp)
+# Declare a cpp executable
+add_executable(ik_test src/ik_test.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(grasp_node grasp_generate_messages_cpp)
 
-## Specify libraries to link a library or executable target against
-# target_link_libraries(grasp_node
-#   ${catkin_LIBRARIES}
-# )
+# Specify libraries to link a library or executable target against
+target_link_libraries(ik_test
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
