@@ -6,7 +6,7 @@ from jarvis_perception.msg import GraspArray
 import math
 
 
-def updateWeights(grips):
+def updateWeights(grips, utterance, AxisAlignedBox):
     newWeight1 = 0.3
     newWeight2 = 0.7
 

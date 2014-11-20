@@ -17,36 +17,54 @@ class UI_client:
         rospy.on_shutdown(self.cleanup)
         rospy.wait_for_service('return_grips')
         self.msg = GoalID()
+        self.newGrips = jarvis_perception.msg.GraspArray()
+
+        self.lastUtterance = ''
+        self.AxisAlignedBox = ''
 
         try:
             grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
-            grips = grip_server()
+            self.grips = grip_server()
+            pubgrips = rospy.Publisher('return_grips', jarvis_perception.msg.GraspArray, queue_size=10)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
-        self.pubgoal = rospy.Publisher('goalID', GoalID)
+        pubgoal = rospy.Publisher('robot_cmd', GoalID)
         rospy.Subscriber('recognizer/output', String, self.speechCb)
+        rospy.Subscriber('objects/target', jarvis_perception.msg.AxisAlignedBox, self.targetObjectCb)
 
+        #now, update the weights and publish the result
         r = rospy.Rate(10.0)
         while not rospy.is_shutdown():
-            gripsWithUpdatedWeights = updateWeights.updateWeights(grips)
-            rospy.loginfo(gripsWithUpdatedWeights)
+            # rospy.loginfo(gripsWithUpdatedWeights)
+            print self.lastUtterance
+            print self.AxisAlignedBox
             rospy.loginfo(self.msg)
-            self.pubgoal.publish(self.msg)
+            pubgoal.publish(self.msg)
+            pubgrips.publish(self.newGrips)
             r.sleep()
-            # testing
 
     def speechCb(self, msg):
         rospy.loginfo(msg.data)
-        rospy.loginfo(msg)
+        self.lastUtterance = msg.data
 
+        # a command keyword is found -- update the goalid
         if msg.data.find("come here") > -1:
             self.msg.id = 1
-        if msg.data.find("move back") > -1:
+
+        elif msg.data.find("move back") > -1:
             self.msg.id = 2
 
-        rospy.loginfo(self.msg)
-        self.pubgoal.publish(self.msg)
+        # a locative keyword is found -- update the probabilities/weights
+        else:
+            if self.AxisAlignedBox:
+                self.newGrips = updateWeights.updateWeights(self.grips, msg.data, self.AxisAlignedBox)
+            else:
+                self.newGrips = self.grips
+
+    def targetObjectCb(self, msg):
+        rospy.loginfo(msg)
+        self.AxisAlignedBox = msg
 
     # def return_grips_client():
 
