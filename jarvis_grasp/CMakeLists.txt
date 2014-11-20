@@ -101,14 +101,14 @@ include_directories(
 # )
 
 # Declare a cpp executable
-add_executable(ik_test src/ik_test.cpp)
+add_executable(PoseGenerator src/PoseGenerator.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(grasp_node grasp_generate_messages_cpp)
 
 # Specify libraries to link a library or executable target against
-target_link_libraries(ik_test
+target_link_libraries(PoseGenerator
   ${catkin_LIBRARIES}
 )
 
