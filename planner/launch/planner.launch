@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="jarvis_planner" name="TrajectoryGenerator" type="TrajectoryGenerator.py"/>
-</launch>
