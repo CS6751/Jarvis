@@ -1,18 +1,23 @@
 #!/usr/bin/env python
 # make prediction of human intent depending on the motor data
 
+#import youbot_common
+from sensor_msgs.msg import JointState
 import rospy
+import numpy
 
-def callback(data)
-    rospy.loginfo(rospy.get_caller_id()+data.data)
+buffer = numpy.zeros((5,7))
 
 def prediction():
+    rospy.init_node('temp')
+    sub = rospy.Subscriber('/joint_states',JointState,callback)
     print '1'
-    rospy.init_node('prediction', anonymous=True)
 
-    rospy.Subscriber("/joint_states", sensor_msgs/JointState, callback)
-
-    rospy.spin()
+def callback(msg):
+    print 'collected msg'
+    rawdata = [d.strip for d in msg.split(',')]
+    effort_data = rawdata[25:31]
+    print effort_data
 
 
 if __name__ == '__main__':
