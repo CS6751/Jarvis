@@ -11,10 +11,12 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   geometry_msgs
   message_generation
+  cmake_modules
+  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Eigen REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -105,6 +107,7 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
@@ -114,6 +117,8 @@ include_directories(
 
 ## Declare a cpp executable
 # add_executable(jarvis_perception_node src/jarvis_perception_node.cpp)
+add_executable(kinect_tf_broadcaster src/kinect_tf_broadcaster.cpp)
+add_executable(vector_maker src/vector_maker.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -123,6 +128,8 @@ include_directories(
 # target_link_libraries(jarvis_perception_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(kinect_tf_broadcaster ${catkin_LIBRARIES})
+target_link_libraries(vector_maker ${catkin_LIBRARIES})
 
 #############
 ## Install ##
