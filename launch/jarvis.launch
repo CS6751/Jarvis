@@ -1,0 +1,11 @@
+<!-- see http://wiki.ros.org/ROS/Tutorials/Roslaunch%20tips%20for%20larger%20projects -->
+<launch>
+    <!-- put your launch files here -->
+    <include file="$(find jarvis_perception)/launch/perception.launch"/>
+    <include file="$(find jarvis_grasp)/launch/grasp_stub.launch" />
+    <include file="$(find user_interface)/launch/user_interface.launch"/>
+    <include file="$(find jarvis_executive)/launch/executive.launch"/>
+    <include file="$(find jarvis_controls)/Launch/controls.launch"/>
+    <include file="$(find human_intent)/launch/human_intent.launch"/>
+    <!--    <include file="$(find jarvis_planner)/launch/planner.launch"/>-->
+</launch>

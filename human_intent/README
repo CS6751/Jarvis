@@ -1,0 +1,10 @@
+install cython 
+	-download cython unzip
+	-sudo python setup.py install (--user)
+
+install cybrain(in the folder)
+	-download cybrain
+	-sudo python setup.py sdist
+	-sudo python setup.py install
+
+
