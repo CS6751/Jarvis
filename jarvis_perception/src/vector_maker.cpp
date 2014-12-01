@@ -1,8 +1,11 @@
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
+#include <geometry_msgs/PointStamped.h>
 #include <Eigen/Geometry>
 #include <tf/transform_listener.h>
 
+/* This node broadcasts a cylindar around a perceived arm and the center of a sphere around the hand/object to be detected
+ */
 
 int main( int argc, char** argv )
 {
@@ -10,34 +13,34 @@ int main( int argc, char** argv )
     ROS_INFO("body_generator started");
     ros::NodeHandle node;
     ros::Rate r(1);
+    
     ros::Publisher marker_pub = node.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-    tf::TransformListener listener;
-    tf::TransformListener world_listener;
+    ros::Publisher sphere_pub = node.advertise<geometry_msgs::PointStamped>("sphere_of_interest_center",1);
+    // TF Transforms.
+    tf::TransformListener listener;//transform between hand and elbow
+    tf::TransformListener world_listener; //transform between elbow and world
     // Set our initial shape type to be a cube
     uint32_t shape = visualization_msgs::Marker::CYLINDER;
-
-    while (node.ok())
+    ros::Rate loop_rate(10);
+    while (ros::ok())
 
     {
-	visualization_msgs::Marker marker;
+	visualization_msgs::Marker marker; //marker for the arm 
 	//check the transform between the arm and the hand
 
-	
-	ros::Rate rate(10.0);
-	
-	    tf::StampedTransform transform;
-	    tf::StampedTransform world_transform;
-	    try{
-		listener.lookupTransform("right_elbow_1","right_hand_1",
-			ros::Time(0), transform);
+	tf::StampedTransform transform;
+	tf::StampedTransform world_transform;
+	try{
+	    listener.lookupTransform("right_elbow_1","right_hand_1",
+		    ros::Time(0), transform);
 
-	    }
-	    catch (tf::TransformException ex){
-		ROS_ERROR("%s",ex.what());
-		ros::Duration(1.0).sleep();
-	    }
-	    try{
-		listener.lookupTransform("world","right_elbow_1",
+	}
+	catch (tf::TransformException ex){
+	    ROS_ERROR("%s",ex.what());
+	    ros::Duration(1.0).sleep();
+	}
+	try{
+	    listener.lookupTransform("world","right_elbow_1",
 			ros::Time(0), world_transform);
 
 	    }
@@ -54,11 +57,7 @@ int main( int argc, char** argv )
 	// Any marker sent with the same namespace and id will overwrite the old one
 	marker.ns = "basic_shapes";
 	marker.id = 0;
-
-	// Set the marker type.  Initially this is CUBE, and cycles between that and SPHERE, ARROW, and CYLINDER
 	marker.type = shape;
-
-	// Set the marker action.  Options are ADD and DELETE
 	marker.action = visualization_msgs::Marker::ADD;
 
 	// Set the pose of the marker.  This is a full 6DOF pose relative to the frame/time specified in the header
@@ -72,8 +71,6 @@ int main( int argc, char** argv )
 	Eigen::Quaternionf q; 
 	  q  = q.FromTwoVectors(fixed_arm,hand);
 	
-
-
 	marker.pose.position.x = hand.x()/2;
 	marker.pose.position.y = hand.y()/2;
 	marker.pose.position.z = hand.z()/2;
@@ -95,26 +92,19 @@ int main( int argc, char** argv )
 
 	marker.lifetime = ros::Duration();
 
+	//Set up the sphere center
+	geometry_msgs::PointStamped center; // center of the sphere
+	float dist_to_center = 0.1;
+	center.header.frame_id = "/right_elbow_1";
+	center.header.stamp = ros::Time::now();
+	Eigen::Vector3f center_v = hand + 0.1*hand/hand.norm();
+	center.point.x = center_v[0];
+	center.point.y = center_v[1];
+	center.point.z = center_v[2];
+	
 	// Publish the marker
 	marker_pub.publish(marker);
-/*
-	// Cycle between different shapes
-	switch (shape)
-	{
-	    case visualization_msgs::Marker::CUBE:
-		shape = visualization_msgs::Marker::SPHERE;
-		break;
-	    case visualization_msgs::Marker::SPHERE:
-		shape = visualization_msgs::Marker::ARROW;
-		break;
-	    case visualization_msgs::Marker::ARROW:
-		shape = visualization_msgs::Marker::CYLINDER;
-		break;
-	    case visualization_msgs::Marker::CYLINDER:
-		shape = visualization_msgs::Marker::CUBE;
-		break;
-	}
-	*/
+	sphere_pub.publish(center);
 
 	r.sleep();
     }
