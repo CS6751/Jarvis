@@ -11,6 +11,10 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   geometry_msgs
   actionlib_msgs
+  smach
+  smach_ros
+  smach_msgs
+  smach_viewer
 )
 
 ## System dependencies are found with CMake's conventions
