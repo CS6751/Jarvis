@@ -1,12 +1,13 @@
 import roslib; roslib.load_manifest('smach')
 roslib.load_manifest('smach_ros')
 import rospy
+
 import smach
 from smach import Iterator, StateMachine, CBState
 from smach_ros import ConditionState, IntrospectionServer
 
 def construct_sm():
-    sm = StateMachine(outcomes = ['succeeded','aborted','preempted'])
+	sm = StateMachine(outcomes = ['succeeded','aborted','preempted'])
 	sm.userdata.nums = range(25, 88, 3)
 	sm.userdata.even_nums = []
 	sm.userdata.odd_nums = []
