@@ -10,6 +10,7 @@ import updateWeights
 import roslib; roslib.load_manifest('pocketsphinx')
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
+import tf
 
 class UI_client:
 
@@ -20,7 +21,9 @@ class UI_client:
         self.newGrips = jarvis_perception.msg.GraspArray()
 
         self.lastUtterance = ''
-        self.AxisAlignedBox = ''
+        self.axisAlignedBox = ''
+        self.person_trans = ''
+        self.person_rot = ''
 
         try:
             grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
@@ -28,6 +31,13 @@ class UI_client:
             pubgrips = rospy.Publisher('return_grips', jarvis_perception.msg.GraspArray, queue_size=10)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
+
+        ## TODO: implement listener for person pose topic
+        # listener = tf.TransformListener()
+
+        # rospy.wait_for_service('spawn')
+        # spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
+        # spawner(4, 2, 0, 'turtle2')
 
         pubgoal = rospy.Publisher('robot_cmd', GoalID)
         rospy.Subscriber('recognizer/output', String, self.speechCb)
@@ -38,8 +48,14 @@ class UI_client:
         while not rospy.is_shutdown():
             # rospy.loginfo(gripsWithUpdatedWeights)
             print self.lastUtterance
-            print self.AxisAlignedBox
+            print self.axisAlignedBox
             rospy.loginfo(self.msg)
+
+            # try:
+            #     (self.person_trans,self.person_rot) = listener.lookupTransform('/person_tf', '/<box tf>', rospy.Time(0))
+            # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            #     continue
+
             pubgoal.publish(self.msg)
             pubgrips.publish(self.newGrips)
             r.sleep()
@@ -49,22 +65,29 @@ class UI_client:
         self.lastUtterance = msg.data
 
         # a command keyword is found -- update the goalid
-        if msg.data.find("come here") > -1:
-            self.msg.id = 1
+        # 1. come here
+        # 2. grab this
+        # 3. stop!
 
-        elif msg.data.find("move back") > -1:
-            self.msg.id = 2
+        if msg.data.find("come here") > -1:
+            self.msg.id = 'come_here'
+
+        elif msg.data.find("grab") > -1:
+            self.msg.id = 'grab'
+
+        elif msg.data.find("stop") > -1:
+            self.msg.id = 'stop'
 
         # a locative keyword is found -- update the probabilities/weights
         else:
-            if self.AxisAlignedBox:
-                self.newGrips = updateWeights.updateWeights(self.grips, msg.data, self.AxisAlignedBox)
+            if self.axisAlignedBox:
+                self.newGrips = updateWeights.updateWeights(self.grips, msg.data, self.axisAlignedBox, self.person_rot)
             else:
                 self.newGrips = self.grips
 
     def targetObjectCb(self, msg):
         rospy.loginfo(msg)
-        self.AxisAlignedBox = msg
+        self.axisAlignedBox = msg
 
     # def return_grips_client():
 
