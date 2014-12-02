@@ -1,5 +1,4 @@
 <launch>
-   
-     <node pkg="jarvis_executive" name="executive_publisher" type="executive_publisher.py"/>
-       
+   <node pkg="jarvis_executive" name="jarvis_statemachine" type="jarvis_statemachine.py"/>
+   <node pkg="jarvis_executive" name="jarvis_statemachine_stub" type="jarvis_statemachine_stub.py"/>
 </launch>
