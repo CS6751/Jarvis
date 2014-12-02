@@ -15,7 +15,7 @@ int main( int argc, char** argv )
     ros::Rate r(1);
     
     ros::Publisher marker_pub = node.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-    ros::Publisher sphere_pub = node.advertise<geometry_msgs::PointStamped>("sphere_of_interest_center",1);
+    ros::Publisher sphere_pub = node.advertise<geometry_msgs::PointStamped>("sphere_center",1);
     // TF Transforms.
     tf::TransformListener listener;//transform between hand and elbow
     tf::TransformListener world_listener; //transform between elbow and world
