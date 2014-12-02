@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   message_generation
+  geometry_msgs
+  actionlib_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -50,6 +52,8 @@ find_package(catkin REQUIRED COMPONENTS
    Kill.msg
    Mode.msg
    PlanCommand.msg
+   PerceptionRun.msg
+   IntentRun.msg
  )
 
 ## Generate services in the 'srv' folder
