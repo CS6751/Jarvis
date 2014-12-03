@@ -1,6 +1,79 @@
 #!/usr/bin/env python
 # license from conrell university CS 6751
 
+import roslib; roslib.load_manifest('jarvis_executive')
+import rospy
+import smach
+import smach_ros
+from std_msgs.msg import String
+from actionlib_msgs.msg import GoalID
+from human_intent.msg import Intent
+from jarvis_planner.msg import PlanStatus
+
+# all the counters go here!
+UI_COUNTER = 0
+HI_COUNTER = 0
+JP_COUNTER = 0
+
+# all the callbacks go here!
+def user_interface_callback(userdata):
+    if userdata.id== '100':
+    	UI_COUNTER = 1
+    
+
+def human_intent_callback(userdata):
+    if userdata.intent == 1:
+	HI_COUNTER = 1
+    else:
+    	HI_COUNTER = 2
+
+def jarvis_planner_callback(userdata):
+    if userdata.PlanStatus == True:
+    	JP_COUNTER = 1
+    else:
+    	JP_COUNTER = 0
+
+# all the states go here!
+class Foo(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['outcome1','outcome2'])
+        self.counter = 0
+
+    def execute(self, userdata):
+        rospy.loginfo('Executing state FOO')
+        
+        while not rospy.is_shoutdown():
+            rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
+            rospy.Subscriber('intents_trial', Intent, human_intent_callback)
+            rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
+    	
+    	    if UI_COUNTER==1 and HI_COUNTER==1 and JP_COUNTER==1:
+    	    	return 'outcome 1' 
+    
+   
+# main goes here!
+def main():
+    rospy.init_node('listener_stub', anonymous=True)
+
+    # Create a SMACH state machine
+    sm = smach.StateMachine(outcomes=['outcome4', 'outcome5'])
+
+    # Open the container
+    with sm:
+        # Add states to the container
+        smach.StateMachine.add('FOO', Foo(), 
+                               transitions={'outcome1':'outcome4'})
+       
+    # Execute SMACH plan
+    outcome = sm.execute()
+    
+        
+if __name__ == '__main__':
+    main()
+    
+    
+    
+'''
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
@@ -38,3 +111,4 @@ def listener():
         
 if __name__ == '__main__':
     listener()
+'''
