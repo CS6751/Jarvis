@@ -48,7 +48,7 @@ class Foo(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state FOO')
         
-        while not rospy.is_shutdown() and (a=True):
+        while not rospy.is_shutdown() and (a==True):
             rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
             rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
