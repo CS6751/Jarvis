@@ -14,6 +14,7 @@ from jarvis_planner.msg import PlanStatus
 UI_COUNTER = 0
 HI_COUNTER = 0
 JP_COUNTER = 0
+a = False
 
 # all the callbacks go here!
 def user_interface_callback(userdata):
@@ -47,14 +48,14 @@ class Foo(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state FOO')
         
-        while not rospy.is_shutdown():
+        while not rospy.is_shutdown() and (a=True):
             rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
             rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     	
-    	    if (UI_COUNTER==1) and (HI_COUNTER==1) and (JP_COUNTER==1):
-    	    	print 'gonna shift to outcome4!!!!!!'
-    	    	return 'outcome1' 
+    	    a = (UI_COUNTER==1) and (HI_COUNTER==1) and (JP_COUNTER==1):
+    	print 'gonna shift to outcome4!!!!!!'
+    	return 'outcome1' 
     
    
 # main goes here!
