@@ -13,7 +13,7 @@ def jarvis_planner_pub():
     counter = 0
     boolean = [True, False]
     while not rospy.is_shutdown():
-        if counter == 50:
+        if counter >= 50:
           plan_ready = boolean[0] 
         else:
           plan_ready = boolean[1]
