@@ -6,48 +6,46 @@ import smach
 import smach_ros
 
 # define state Foo
-class Foo(smach.State):
+class Stop(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome1','outcome2'])
+        smach.State.__init__(self, outcomes=['initiation','waiting','armmove'])
         self.counter = 0
 
     def execute(self, userdata):
-        rospy.loginfo('Executing state FOO')
-        if self.counter < 3:
+        rospy.loginfo('Executing state STOP')
+       
+        if self.counter < 10:
             self.counter += 1
-            return 'outcome1'
+            return 'waiting'
         else:
-            return 'outcome2'
+            return 'armmove'
 
-
-# define state Bar
-class Bar(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome2'])
-
-    def execute(self, userdata):
-        rospy.loginfo('Executing state BAR')
-        return 'outcome2'
-        
 
 
 
 # main
 def main():
-    rospy.init_node('smach_example_state_machine')
+    rospy.init_node('jarvis_statemachine')
 
     # Create a SMACH state machine
-    sm = smach.StateMachine(outcomes=['outcome4', 'outcome5'])
+    sm = smach.StateMachine(outcomes=['success', 'failure'])
 
     # Open the container
     with sm:
         # Add states to the container
-        smach.StateMachine.add('FOO', Foo(), 
-                               transitions={'outcome1':'BAR', 
-                                            'outcome2':'outcome4'})
-        smach.StateMachine.add('BAR', Bar(), 
-                               transitions={'outcome2':'FOO'})
+        smach.StateMachine.add('STOP', Stop(), 
+                               transitions={'initiation':'BASEMOVE', 'waiting':'STOP', 'armmove':'ARMMOVE'})
+        smach.StateMachine.add('BASEMOVE', Basemove(), 
+                               transitions={'basemove_done':'STOP','basemove_failed':'failure'})
+        smach.StateMachine.add('ARMMOVE', Armmove(), 
+                               transitions={'armmove_done':'HOLD','armmove_failed':'failure'})
+        smach.StateMachine.add('HOLD', Hold(), 
+                               transitions={'hold_done':'HOLD','hold_failed':'ARMMOVE', 
+                               'yes_adjustment':'ADJUST', 'job_done':'success'})
+        smach.StateMachine.add('ADJUST', Adjust(), 
+                               transitions={'being_adjusted':'ADJUST', 'start_over':'STOP', 'no_adjustment':'HOLD'})
 
+ 
     # Execute SMACH plan
     outcome = sm.execute()
 
