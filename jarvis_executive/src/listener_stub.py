@@ -52,7 +52,7 @@ class Foo(smach.State):
             rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     	
-    	    if UI_COUNTER==1 and HI_COUNTER==1 and JP_COUNTER==1:
+    	    if (UI_COUNTER==1) and (HI_COUNTER==1) and (JP_COUNTER==1):
     	    	print 'gonna shift to outcome4!!!!!!'
     	    	return 'outcome1' 
     
