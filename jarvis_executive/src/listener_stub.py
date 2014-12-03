@@ -111,7 +111,7 @@ def listener():
     rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     
     rospy.spin()
-'''        
+    
 if __name__ == '__main__':
     listener()
-
+'''
