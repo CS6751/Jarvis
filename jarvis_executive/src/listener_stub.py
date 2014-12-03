@@ -21,7 +21,7 @@ def user_interface_callback(userdata):
     	print 'UI_COUNTER = 1'
     	UI_COUNTER = 1
     else:
-    	print user didnt reach 100 yet
+    	print 'user didnt reach 100 yet'
     
 
 def human_intent_callback(userdata):
