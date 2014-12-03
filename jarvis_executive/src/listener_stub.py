@@ -43,13 +43,13 @@ class Foo(smach.State):
 	self.JP_COUNTER = 0
     def execute(self, userdata):
         rospy.loginfo('Executing state FOO')
-        
-        while not rospy.is_shutdown() and (a==True):
+        boolean = False
+        while not rospy.is_shutdown() and (boolean==True):
             rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
             rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     	
-    	    a = (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1)
+    	    boolean = (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1)
     	print 'gonna shift to outcome4!!!!!!'
     	return 'outcome1' 
     
