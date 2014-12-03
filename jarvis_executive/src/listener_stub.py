@@ -36,7 +36,7 @@ def jarvis_planner_callback(userdata):
 # all the states go here!
 class Foo(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['outcome1','outcome2'])
+        smach.State.__init__(self, outcomes=['outcome1'])
         self.counter = 0
 
     def execute(self, userdata):
@@ -56,7 +56,7 @@ def main():
     rospy.init_node('listener_stub', anonymous=True)
 
     # Create a SMACH state machine
-    sm = smach.StateMachine(outcomes=['outcome4', 'outcome5'])
+    sm = smach.StateMachine(outcomes=['outcome4'])
 
     # Open the container
     with sm:
