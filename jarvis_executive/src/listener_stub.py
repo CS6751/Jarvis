@@ -3,18 +3,21 @@
 
 import rospy
 from std_msgs.msg import String
+from actionlib_msgs.msg import GoalID
 
-def callback(data):
-    if data.id == '3'
+
+def callback(userdata):
+    if userdata.data == '3':
       print 'correct!!!'
     else:
       print 'go away..'
-    
+
+
 def listener():
 
     rospy.init_node('listener_stub', anonymous=True)
 
-    rospy.Subscriber('robot_cmd', GoalID, callback)
+    rospy.Subscriber('robot_cmd_trial', String, callback)
 
     
     rospy.spin()
