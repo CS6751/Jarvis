@@ -1,4 +1,5 @@
 <launch>
    <node pkg="jarvis_executive" name="listener_stub" type="listener_stub.py"/>
    <node pkg="jarvis_executive" name="user_interface_stub" type="user_interface_stub.py"/>
+   <node pkg="jarvis_executive" name="human_intent_stub" type="human_intent_stub.py"/>
 </launch>
