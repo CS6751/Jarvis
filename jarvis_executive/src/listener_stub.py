@@ -13,7 +13,6 @@ from jarvis_planner.msg import PlanStatus
 # all the callbacks go here!
 def user_interface_callback(userdata):
     if userdata.id >= '100':
-    	print 'UI_COUNTER = 1'
     	Foo.UI_COUNTER = 1
     else:
     	print 'user didnt reach 100 yet'
@@ -43,13 +42,14 @@ class Foo(smach.State):
 	self.JP_COUNTER = 0
     def execute(self, userdata):
         rospy.loginfo('Executing state FOO')
-        boolean = False
-        while not rospy.is_shutdown() and (boolean==False):
+        
+        while not rospy.is_shutdown():
             rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
             rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     	
-    	    boolean = (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1)
+    	    if (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1):
+    	    	break:
     	print 'gonna shift to outcome4!!!!!!'
     	return 'outcome1' 
     
