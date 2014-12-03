@@ -10,17 +10,11 @@ from actionlib_msgs.msg import GoalID
 from human_intent.msg import Intent
 from jarvis_planner.msg import PlanStatus
 
-# all the counters go here!
-UI_COUNTER = 0
-HI_COUNTER = 0
-JP_COUNTER = 0
-a = False
-
 # all the callbacks go here!
 def user_interface_callback(userdata):
     if userdata.id >= '100':
     	print 'UI_COUNTER = 1'
-    	UI_COUNTER = 1
+    	Foo.UI_COUNTER = 1
     else:
     	print 'user didnt reach 100 yet'
     
@@ -28,23 +22,25 @@ def user_interface_callback(userdata):
 def human_intent_callback(userdata):
     if userdata.intent == 1:
     	print 'HI cool'
-	HI_COUNTER = 1
+	Foo.HI_COUNTER = 1
     else:
-    	HI_COUNTER = 2
+    	Foo.HI_COUNTER = 2
 
 def jarvis_planner_callback(userdata):
     if userdata.PlanStatus == True:
     	print 'plan ready!'
-    	JP_COUNTER = 1
+    	Foo.JP_COUNTER = 1
     else:
-    	JP_COUNTER = 0
+    	Foo.JP_COUNTER = 0
 
 # all the states go here!
 class Foo(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['outcome1'])
         self.counter = 0
-
+	self.UI_COUNTER = 0
+	self.HI_COUNTER = 0
+	self.JP_COUNTER = 0
     def execute(self, userdata):
         rospy.loginfo('Executing state FOO')
         
@@ -53,7 +49,7 @@ class Foo(smach.State):
             rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     	
-    	    a = (UI_COUNTER==1) and (HI_COUNTER==1) and (JP_COUNTER==1)
+    	    a = (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1)
     	print 'gonna shift to outcome4!!!!!!'
     	return 'outcome1' 
     
@@ -115,7 +111,7 @@ def listener():
     rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     
     rospy.spin()
-        
+'''        
 if __name__ == '__main__':
     listener()
-'''
+
