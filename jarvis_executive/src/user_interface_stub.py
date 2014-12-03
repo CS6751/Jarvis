@@ -7,7 +7,7 @@ from actionlib_msgs.msg import GoalID
 
 def user_interface_pub():
     pub = rospy.Publisher('robot_cmd', GoalID, queue_size=10)
-    rospy.init_node('user_interface_pub', anonymous=True)
+    rospy.init_node('user_interface_stub', anonymous=True)
     r = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         goalid = '3'
