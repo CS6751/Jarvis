@@ -17,7 +17,7 @@ JP_COUNTER = 0
 
 # all the callbacks go here!
 def user_interface_callback(userdata):
-    if userdata.id== '100':
+    if userdata.id == '100':
     	UI_COUNTER = 1
     
 
@@ -48,7 +48,7 @@ class Foo(smach.State):
             rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     	
     	    if UI_COUNTER==1 and HI_COUNTER==1 and JP_COUNTER==1:
-    	    	return 'outcome 1' 
+    	    	return 'outcome1' 
     
    
 # main goes here!
