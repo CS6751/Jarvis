@@ -36,6 +36,7 @@ class Foo(smach.State):
     # all the callbacks go here!
     def user_interface_callback(self, userdata):
         if int(userdata.id) >= int('100'):
+            print int(userdata.id)
             self.UI_COUNTER = 1
     	else:
     	    pass
