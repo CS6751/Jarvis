@@ -34,20 +34,20 @@ class Foo(smach.State):
     
     
     # all the callbacks go here!
-    def user_interface_callback(userdata):
+    def user_interface_callback(self, userdata):
         if userdata.id >= '100':
             self.UI_COUNTER = 1
     	else:
     	    print 'user didnt reach 100 yet'
     
-    def human_intent_callback(userdata):
+    def human_intent_callback(self, userdata):
         if userdata.intent == 1:
     	    print 'HI cool'
 	    self.HI_COUNTER = 1
         else:
     	    self.HI_COUNTER = 2
 
-    def jarvis_planner_callback(userdata):
+    def jarvis_planner_callback(self, userdata):
         if userdata.PlanStatus == True:
     	    print 'plan ready!'
     	    self.JP_COUNTER = 1
