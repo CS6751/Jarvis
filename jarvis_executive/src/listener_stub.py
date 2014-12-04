@@ -28,9 +28,9 @@ class Foo(smach.State):
             rospy.Subscriber('PlanStatus_trial', PlanStatus, self.jarvis_planner_callback)
     	
     	    if (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1):
-    	    	break
-    	print 'gonna shift to outcome4!!!!!!'
-    	return 'outcome1' 
+    	    	print 'gonna shift to outcome4!!!!!!'
+    		return 'outcome1'
+    	 
     
     
     # all the callbacks go here!
