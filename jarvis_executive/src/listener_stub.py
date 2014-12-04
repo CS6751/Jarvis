@@ -23,9 +23,9 @@ class Foo(smach.State):
         rospy.loginfo('Executing state FOO')
         
         while not rospy.is_shutdown():
-            rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
-            rospy.Subscriber('intents_trial', Intent, human_intent_callback)
-            rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
+            rospy.Subscriber('robot_cmd_trial', GoalID, self.user_interface_callback)
+            rospy.Subscriber('intents_trial', Intent, self.human_intent_callback)
+            rospy.Subscriber('PlanStatus_trial', PlanStatus, self.jarvis_planner_callback)
     	
     	    if (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1):
     	    	break
