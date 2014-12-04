@@ -21,7 +21,7 @@ class Foo(smach.State):
 	self.JP_COUNTER = 0
     def execute(self, userdata):
         rospy.loginfo('Executing state FOO')
-        
+        r = rospy.Rate(10)
         while not rospy.is_shutdown():
             rospy.Subscriber('robot_cmd_trial', GoalID, self.user_interface_callback)
             rospy.Subscriber('intents_trial', Intent, self.human_intent_callback)
@@ -30,7 +30,7 @@ class Foo(smach.State):
     	    if (self.UI_COUNTER==1) and (self.HI_COUNTER==1) and (self.JP_COUNTER==1):
     	    	print 'gonna shift to outcome4!!!!!!'
     		return 'outcome1'
-    	 
+    	    r.sleep() 
     
     
     # all the callbacks go here!
