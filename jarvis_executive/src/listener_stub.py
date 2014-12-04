@@ -10,27 +10,6 @@ from actionlib_msgs.msg import GoalID
 from human_intent.msg import Intent
 from jarvis_planner.msg import PlanStatus
 
-# all the callbacks go here!
-def user_interface_callback(userdata):
-    if userdata.id >= '100':
-    	Foo.UI_COUNTER = 1
-    else:
-    	print 'user didnt reach 100 yet'
-    
-
-def human_intent_callback(userdata):
-    if userdata.intent == 1:
-    	print 'HI cool'
-	Foo.HI_COUNTER = 1
-    else:
-    	Foo.HI_COUNTER = 2
-
-def jarvis_planner_callback(userdata):
-    if userdata.PlanStatus == True:
-    	print 'plan ready!'
-    	Foo.JP_COUNTER = 1
-    else:
-    	Foo.JP_COUNTER = 0
 
 # all the states go here!
 class Foo(smach.State):
@@ -53,6 +32,28 @@ class Foo(smach.State):
     	print 'gonna shift to outcome4!!!!!!'
     	return 'outcome1' 
     
+    
+    # all the callbacks go here!
+    def user_interface_callback(userdata):
+        if userdata.id >= '100':
+            self.UI_COUNTER = 1
+    	else:
+    	    print 'user didnt reach 100 yet'
+    
+    def human_intent_callback(userdata):
+        if userdata.intent == 1:
+    	    print 'HI cool'
+	    self.HI_COUNTER = 1
+        else:
+    	    self.HI_COUNTER = 2
+
+    def jarvis_planner_callback(userdata):
+        if userdata.PlanStatus == True:
+    	    print 'plan ready!'
+    	    self.JP_COUNTER = 1
+        else:
+    	    self.JP_COUNTER = 0
+
    
 # main goes here!
 def main():
