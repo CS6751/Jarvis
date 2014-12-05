@@ -3,9 +3,10 @@
 
 from sensor_msgs.msg import JointState
 import rospy
-import numpy
+import numpy as np
 # from Intent.msg import intent
 from std_msgs.msg import String
+import matplotlib.pyplot as plt
 
 buf = []
 prev = []
@@ -14,8 +15,19 @@ buflength = 15
 threshold = 0.005
 spark = 0
 predict = 0
+x = []
+y1 = []
+y2 = []
+y3 = []
+yp1 = []
+yp2 = []
+yp3 = []
 
 def prediction():
+    # x = [1,2,3,4]
+    # y = [1,2,3,4]
+    # plt.plot(x,y)
+    # plt.show()
 
     rospy.init_node('temp')
     print 'starting'
@@ -29,6 +41,9 @@ def prediction():
         pub.publish(inte)
         r.sleep()
 
+    plt.plot(x,y1,x,y2,x,y3,x,yp1(x),x,yp2(x),x,yp3(x))
+    plt.show()
+
     rospy.spin()
 
 def callback(msg):
@@ -37,7 +52,7 @@ def callback(msg):
     if msg.name[0]=='arm_joint_1':
         data = msg.position
         curr = data[1:4]
-        print curr
+        # print curr
         if spark==0:
             dif = diff(curr,prev)
             # print "diff: ",dif
@@ -72,12 +87,22 @@ def totalrow(mat):
     return total
 
 def classify(buf):
+    global x, y1, y2, y3
+    y1 = []
+    y2 = []
+    y3 = []
+    x = range(len(buf))
+    for line in buf:
+        y1.append(line[0])
+        y2.append(line[1])
+        y3.append(line[2])
     print 'doing classification'
     features = extractfeatures(buf)
     print 'features: ', features
 
 
 def extractfeatures(buf):
+    global yp1, yp2, yp3, x
     features = []
     link1 = []
     link2 = []
@@ -89,6 +114,24 @@ def extractfeatures(buf):
     features.append(avgdelta(link1))
     features.append(avgdelta(link2))
     features.append(avgdelta(link3))
+    features.append(abs(link1[0]-link1[len(link1)-1]))
+    features.append(abs(link2[0]-link2[len(link2)-1]))
+    features.append(abs(link3[0]-link3[len(link3)-1]))
+    z1 = np.polyfit(x,link1,2)
+    z2 = np.polyfit(x,link2,2)
+    z3 = np.polyfit(x,link3,2)
+    abslink1 = [abs(z1[i]) for i in range(len(z1)-1)]
+    abslink2 = [abs(z2[i]) for i in range(len(z2)-1)]
+    abslink3 = [abs(z3[i]) for i in range(len(z3)-1)]
+    for a in abslink1:
+        features.append(a)
+    for a in abslink2:
+        features.append(a)
+    for a in abslink3:
+        features.append(a)
+    yp1 = np.poly1d(z1)
+    yp2 = np.poly1d(z2)
+    yp3 = np.poly1d(z3)
     return features
 
 def avgdelta(l):
