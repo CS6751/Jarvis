@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
+tf_conversions
+
   geometry_msgs
   message_generation
   cmake_modules
@@ -94,6 +96,7 @@ catkin_package(
   std_msgs 
   message_runtime
   tf
+  tf_conversions
   geometry_msgs
   DEPENDS system_lib
 )

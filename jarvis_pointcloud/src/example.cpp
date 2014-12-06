@@ -8,62 +8,63 @@
 #include <tf/transform_listener.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/filters/passthrough.h>
+#include <Eigen/Geometry>
 //
 ros::Publisher pub;
-geometry_msgs/PointStamped center;
-tf::TransformListener listener;
-//
-void point_cb(const std_msg::PointStamped& point)
+geometry_msgs::PointStamped center;
+
+// gets a spherical cloud centered on the center point 
+/*
+void getSphereCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud, pcl::PointCloud<pcl::PointXYZ>::Ptr &result )
+
 {
-    center = point;
-}
-// gets a spherical cloud centered on the center point
-void getSphereCloud()
-{
+    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud;
     pcl::PassThrough<pcl::PointXYZ> xfilter;
     xfilter.setInputCloud(cloud);
     xfilter.setFilterFieldName("x");
     xfilter.setFilterLimits(-0.1, 0.1);
-    xfilter.filter(*cloud);
+    xfilter.filter(*temp_cloud);
     
     pcl::PassThrough<pcl::PointXYZ> yfilter;
-    yfilter.setInputCloud(cloud);
-    yfilter.setFilterFieldName("x");
+    yfilter.setInputCloud(temp_cloud);
+    yfilter.setFilterFieldName("y");
     yfilter.setFilterLimits(-0.1, 0.1);
-    yfilter.filter(*cloud);
+    yfilter.filter(*temp_cloud);
 
     pcl::PassThrough<pcl::PointXYZ> zfilter;
-    xfilter.setInputCloud(cloud);
-    xfilter.setFilterFieldName("x");
-    xfilter.setFilterLimits(-0.1, 0.1);
-    filter.filter(*cloud);
+    zfilter.setInputCloud(temp_cloud);
+    zfilter.setFilterFieldName("z");
+    zfilter.setFilterLimits(-0.1, 0.1);
+    zfilter.filter(result);
 
 
 }
+*/
 //
+ 
     void 
 cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
 {
+    tf::TransformListener listener;
     // Create a container for the data.
     sensor_msgs::PointCloud2 output;
     // Create a pointcloud to do processing
-    pcl::PointCloud<pcl::PointXYZ> cloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr input_pcl;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr output_pcl;
     // Find the center point in the point cloud frame
-    geometry_msgs::PointStamped c_w;
+    sensor_msgs::PointCloud2 world_cloud;
+    std::string world_frame = input->header.frame_id;
+    tf::StampedTransform world_tf;
     try{
-	tf::StampedTransform transform;
-	listener.lookupTransform(input.header.frame_id,
-		center.header.frame_id,
-		ros::Time(0), transform);
-	//transform the point to global coordiantes
-listener.trasnformPoint(input.frame_id, center, c_w);	
-	// Do data processing here...
-	
+	//transform the point to world coordinates
+	listener.lookupTransform("/target",world_frame, ros::Time(0),world_tf);	
     // Convert PC2 to pointCloud
-    pcl::fromROSMsg(input, cloud);
+	pcl::fromROSMsg(*input, *input_pcl);
     //
-	output = *input;
-
+    //DO Data processing here ...
+	output_pcl = input_pcl;
+//Convert back to pointcloud
+	pcl::toROSMsg(*output_pcl, output);
 	// Publish the data.
 
 	pub.publish (output);
@@ -73,29 +74,32 @@ listener.trasnformPoint(input.frame_id, center, c_w);
     }
     catch (tf::TransformException ex){
 	ROS_ERROR("%s",ex.what());
+	ros::Duration(1.0).sleep();
     }
 }
 
     int
 main (int argc, char** argv)
 {
-    ROS_INFO("Started looking at Pointcloud");
-    char* topic;
+    
+    /*
+    std::string topic;
     if (argc > 1)
     {
-	char* topic = argv[0];
+	topic = argv[0];
     }
     else
     {
 	topic = "/camera/depth_registered/points";
     }
-    ROS_INFO(topic);
+    */
     // Initialize ROS
     ros::init (argc, argv, "my_pcl_tutorial");
     ros::NodeHandle nh;
+    ROS_INFO("Started looking at Pointcloud");
     // Create a ROS subscriber for the input point cloud
-    ros::Subscriber sub = nh.subscribe (topic, 1, cloud_cb);
-    ros::Subscriber pt = nh.subscribe ("sphere_center",1,point_cb);
+    std::string topic =  "/camera/depth_registered/points";
+     ros::Subscriber sub = nh.subscribe (topic, 1, cloud_cb);
     // Create a ROS publisher for the output point cloud
     pub = nh.advertise<sensor_msgs::PointCloud2> ("output", 1);
 
