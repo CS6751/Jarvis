@@ -48,7 +48,7 @@ class UI_client:
         while not rospy.is_shutdown():
             # rospy.loginfo(gripsWithUpdatedWeights)
             print self.lastUtterance
-            print self.axisAlignedBox
+            # print self.axisAlignedBox
             rospy.loginfo(self.msg)
 
             # try:
@@ -81,7 +81,8 @@ class UI_client:
         # a locative keyword is found -- update the probabilities/weights
         else:
             if self.axisAlignedBox:
-                self.newGrips = updateWeights.updateWeights(self.grips, msg.data, self.axisAlignedBox, self.person_rot)
+                self.lastUtterance = 'left'
+                self.newGrips = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.person_rot)
             else:
                 self.newGrips = self.grips
 

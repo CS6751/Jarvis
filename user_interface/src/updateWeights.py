@@ -19,6 +19,8 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot, plotting = True)
     yspan = axisAlignedBox.l
     position = axisAlignedBox.pose.position # position in camera frame
     orientation = axisAlignedBox.pose.orientation # orientation wrt camera frame (Q: should this come in as a tf?)
+    print utterance
+    # print xspan, yspan, position, orientation
 
     #TODO: is the origin at the center of the box? 
     var = OrderedDict()
@@ -67,7 +69,7 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot, plotting = True)
     elif utterance.find("top") > -1:
         angleInPersonFrame = 0.5*pi
     else:
-        print 'Error: I thought I heard a location keyword, but I did not understand it.'
+        raise Exception('Error: I thought I heard a location keyword, but I did not understand it.')
 
     if angleInPersonFrame:
         # Transform from the person frame into the box frame and then compute the likelihoods
@@ -75,9 +77,10 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot, plotting = True)
             # No person in view: default to using camera frame
             person_rot = 0
 
-        c = cos(angleInPersonFrame)
-        s = sin(angleInPersonFrame)
+        c = cos(angleInPersonFrame+person_rot)
+        s = sin(angleInPersonFrame+person_rot)
 
+        #TODO: normalize sum to one
         likelihood['BoxLeft']       = max(-c, 0)**2
         likelihood['BoxTopLeft']    = max(-c, 0)**2 + max(s, 0)**2
         likelihood['BoxTop']        = max(s, 0)**2
@@ -87,13 +90,24 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot, plotting = True)
         likelihood['BoxBottom']     = max(-s, 0)**2
         likelihood['BoxBottomLeft'] = max(-c, 0)**2 + max(-s, 0)**2
 
-    for i in range(len(oldGrips)):
-        position = oldGrips[i].point
-        zSum = 0
-        for name, like in enumerate(likelihood):
-            zSum += likelihood[name] * var[name].pdf(position)
+        # print likelihood['BoxTopLeft']
+        # print likelihood['BoxLeft']
+        # print likelihood['BoxBottomLeft']
 
-        # Update the ith grip's weight.  posterior = grip weight * prior
+    for i in range(len(oldGrips)):
+        # pos = oldGrips[i].point[0]
+        print oldGrips
+        pos = 2*[[]]
+        pos[0] = float(oldGrips[i].point.x); pos[1] = float(oldGrips[i].point.y)
+        zSum = 0
+        for j, name in enumerate(likelihood):
+            print name
+            print likelihood[name]
+            print var[name].pdf(pos)
+            zSum += likelihood[name] * var[name].pdf(pos)
+        print zSum
+
+        # Update the ith grip's weight.  (posterior) = (grip likelihood) * (prior)
         weight[i] = zSum * oldGrips[i].weight
         grip[i] = GraspBox(oldGrips[i].point, oldGrips[i].orientation, weight[i])
 
@@ -102,9 +116,9 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot, plotting = True)
     if plotting:
         y, x = mgrid[slice(-0.5*yspan, 0.5*yspan + 0.1, 0.1),
                 slice(-0.5*xspan, 0.5*xspan + 0.1, 0.1)]
-        position = empty(x.shape + (2,))
-        position[:,:,0] = x; position[:,:,1] = y
-        z = var.pdf(position)
+        pos = empty(x.shape + (2,))
+        pos[:,:,0] = x; pos[:,:,1] = y
+        z = var.pdf(pos)
         plt.pcolor(x, y, z, cmap='spectral')
         for i in range(len(oldGrips)):
             #TODO: plot the points
