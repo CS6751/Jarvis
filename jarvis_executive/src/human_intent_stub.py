@@ -4,6 +4,7 @@
 import rospy
 from std_msgs.msg import String
 from human_intent.msg import Intent
+from jarvis_executive.msg import *
 
 def human_intent_pub():
     pub = rospy.Publisher('intents_trial', Intent, queue_size=10)
