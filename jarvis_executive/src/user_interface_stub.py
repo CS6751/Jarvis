@@ -26,7 +26,11 @@ def user_interface_pub():
         if num == 20:
             toBasemove = GoalID(id = 'come_here')
             pub.publish(toBasemove)
-            
+            print 'move to base move transition!!!!!!!'
+        if num == 21:
+            m = GoalID(id = None)
+            pub.publish(m)
+
         if num == 100:
             stop = GoalID(id = 'stop')
             pub.publish(stop)
