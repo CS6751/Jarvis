@@ -12,7 +12,7 @@ def user_interface_pub():
     num = 0
     while not rospy.is_shutdown():
         data = GoalID(id = str(num))
-		#time_stamp = str(rospy.get_time())
+        #time_stamp = str(rospy.get_time())
         #num = 3
         #string_id = id(num)
         #data = GoalID(time_stamp,string_id) 
@@ -21,6 +21,14 @@ def user_interface_pub():
         #pub.publish('0', string_id)
         rospy.loginfo(data)
         pub.publish(data)
+        
+        if num == 20:
+            toBasemove = GoalID(id = 'come_here')
+            pub.publish(toBasemove)
+            
+        if num == 100:
+            stop = GoalID(id = 'stop')
+            pub.publish(stop)
         num = num+1
         r.sleep()
 '''

@@ -8,20 +8,27 @@ from jarvis_planner.msg import PlanStatus
 def jarvis_planner_pub():
     pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
     rospy.init_node('jarvis_planner_stub', anonymous=True)
-    r = rospy.Rate(10) # 10hz
+    r = rospy.Rate(1) # 10hz
     
     counter = 0
-    boolean = [True, False]
+    num = 0
     while not rospy.is_shutdown():
-        if counter >= 50:
-          plan_ready = boolean[0] 
-        else:
-          plan_ready = boolean[1]
+        rospy.Subscriber('PlanCommand', PlanCommand, callback)
+        
          
-        rospy.loginfo(plan_ready)
-        pub.publish(plan_ready)
+        print counter
         counter += 1
         r.sleep()
+        
+def callback(userdata):
+    if userdata.plancommand:
+        print 'begin planning for basemove'
+        num += 1
+        if num >= 5:
+            pub.publish(True)
+    else:
+        pub.publish(False)
+        
 
 if __name__ == '__main__':
     try:
