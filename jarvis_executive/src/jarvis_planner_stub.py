@@ -4,6 +4,7 @@
 import rospy
 from std_msgs.msg import String
 from jarvis_planner.msg import PlanStatus
+from jarvis_executive.msg import *
 
 def jarvis_planner_pub():
     pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
