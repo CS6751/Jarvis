@@ -31,9 +31,13 @@ def user_interface_pub():
             m = GoalID(id = None)
             pub.publish(m)
 
-        if num == 100:
+        if num == 50:
             stop = GoalID(id = 'stop')
             pub.publish(stop)
+            
+        if num == 51:
+            mm = GoalID(id = None)
+            pub.publish(mm)
         num = num+1
         r.sleep()
 '''
