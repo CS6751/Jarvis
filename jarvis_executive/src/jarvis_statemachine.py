@@ -89,13 +89,15 @@ class Basemove(smach.State):
             pubCon.publish(Mode(mode = 4))
             return 'basemove_done'
 
-'''
-class Stop(smach.State):
+
+class Armmove(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
         self.counter = 0
 
     def execute(self, userdata):
+        pass
+        '''
         rospy.loginfo('Executing state STOP')
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
@@ -113,14 +115,16 @@ class Stop(smach.State):
         elif userdata.id == 'grab':
             print 'Heard "Grab this!"'
             return 'armmove'
+        '''
 
-
-class Stop(smach.State):
+class Hold(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
         self.counter = 0
 
     def execute(self, userdata):
+        pass
+        '''
         rospy.loginfo('Executing state STOP')
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
@@ -138,14 +142,16 @@ class Stop(smach.State):
         elif userdata.id == 'grab':
             print 'Heard "Grab this!"'
             return 'armmove'
+        '''
 
-
-class Stop(smach.State):
+class Adjust(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
         self.counter = 0
 
     def execute(self, userdata):
+        pass
+        '''
         rospy.loginfo('Executing state STOP')
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
@@ -163,7 +169,7 @@ class Stop(smach.State):
         elif userdata.id == 'grab':
             print 'Heard "Grab this!"'
             return 'armmove'
-'''
+        '''
 
 
 # main
