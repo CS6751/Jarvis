@@ -107,21 +107,14 @@ include_directories(
 # )
 
 ## Declare a cpp executable
- add_executable(example src/example.cpp)
-     add_executable( pcl_converter src/pcl_converter.cpp)
+     add_executable( segmenter src/segmenter.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(jarvis_pointcloud_node jarvis_pointcloud_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(example
+target_link_libraries(segmenter
     ${catkin_LIBRARIES} ${PCL_LIBRARIES})
-    target_link_libraries(
-    pcl_converter
-    ${catkin_LIBRARIES} ${PCL_LIBRARIES}
-
- )
-
 #############
 ## Install ##
 #############
