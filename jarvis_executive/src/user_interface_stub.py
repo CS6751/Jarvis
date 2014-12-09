@@ -31,6 +31,15 @@ def user_interface_pub():
             m = GoalID(id = None)
             pub.publish(m)
 
+        if num == 30:
+            to = GoalID(id = 'grab')
+            pub.publish(to)
+            print 'move to grab!!!!!!!'
+            
+        if num == 31:
+            tt = GoalID(id = None)
+            pub.publish(tt)
+
         if num == 50:
             stop = GoalID(id = 'stop')
             pub.publish(stop)
