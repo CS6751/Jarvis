@@ -22,6 +22,7 @@ float Y[4]={CENTER_Y,CENTER_Y-BOARD_Y/2,
 		      CENTER_Y-BOARD_Y/2, CENTER_Y};
 float Z[4]={CENTER_Z+BOARD_Z/2, CENTER_Z+BOARD_Z/3,
 			CENTER_Z-BOARD_Z/3, CENTER_Z+BOARD_Z/3};
+float WEIGHTS[4] = {0.1 0.5 0.5 0.9};
 
 
 
@@ -56,12 +57,14 @@ class BoardGenerator
 	all_grasps.header.frame_id = "/board_tf";
 	all_grasps.header.stamp = ros::Time::now();
 	jarvis_perception::GraspBox grasp_array[4];
+	// generate grasps and put them in a grasp box
 	for (int i = 0; i < 4; ++i)
 	{
 	    jarvis_perception::GraspBox grasp;
 	    grasp.point = points[i];
 	    grasp.quat = quats[i];
-	    grasp.weight = weights[i];
+	    grasp.weight = WEIGHTS[i];
+	    grasp_array[i] = grasp;
 	}
 
     }
