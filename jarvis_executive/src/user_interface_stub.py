@@ -4,6 +4,7 @@
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
+from jarvis_executive.msg import *
 
 def user_interface_pub():
     pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
