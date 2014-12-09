@@ -20,7 +20,7 @@ class Stop(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state STOP')
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
-        r = rospy.Rate(5)
+        r = rospy.Rate(10)
     
         while not rospy.is_shutdown():
             pub.publish(Kill(kill = True))
