@@ -6,7 +6,7 @@ import rospy
 import numpy as np
 import cybrain as cb
 from std_msgs.msg import String
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 buf = []
 prev = []
@@ -21,10 +21,6 @@ yp2 = []
 yp3 = []
 
 def prediction():
-    # x = [1,2,3,4]
-    # y = [1,2,3,4]
-    # plt.plot(x,y)
-    # plt.show()
 
     rospy.init_node('temp')
     print 'starting'
@@ -38,21 +34,15 @@ def prediction():
         pub.publish(inte)
         r.sleep()
 
-    plt.plot(x,y1,x,y2,x,y3,x,yp1(x),x,yp2(x),x,yp3(x))
-    plt.show()
-
     rospy.spin()
 
 def callback(msg):
-    # print 'collected msg'
     global buf, prev, curr, spark
     if msg.name[0]=='arm_joint_1':
         data = msg.position
         curr = data[1:4]
-        # print curr
         if spark==0:
             dif = diff(curr,prev)
-            # print "diff: ",dif
             if max(dif) > threshold:
                 buf.append(prev)
                 buf.append(curr)
@@ -84,6 +74,8 @@ def totalrow(mat):
     return total
 
 def classify(buf):
+    global predict, x
+    x = range(len(buf))
     print 'doing classification'
     features = extractfeatures(buf)
     trainX = []
@@ -95,7 +87,6 @@ def classify(buf):
         for d in line.split(','):
             if d != '\n':
                 data.append(float(d))
-        # data = [float(d) for d in line.split(',')]
         trainX.append(data)
     file.close()
 
@@ -141,7 +132,13 @@ def classify(buf):
     batch.epochs(15)
     # print "Time CyBrain {}".format(time()-t1)
     result = nnet.activateWith(testX[0], return_value= True)
-    predict = result
+    predict = result[0]
+    predict = predict[0]
+    if float(str(predict))< 0.37 :
+        predict = 1
+    else:
+        predict = 0
+    print predict
 
 
 def extractfeatures(buf):
