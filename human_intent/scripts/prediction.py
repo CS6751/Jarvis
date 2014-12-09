@@ -4,9 +4,9 @@
 from sensor_msgs.msg import JointState
 import rospy
 import numpy as np
-# from Intent.msg import intent
+import cybrain as cb
 from std_msgs.msg import String
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 buf = []
 prev = []
@@ -16,9 +16,6 @@ threshold = 0.005
 spark = 0
 predict = 0
 x = []
-y1 = []
-y2 = []
-y3 = []
 yp1 = []
 yp2 = []
 yp3 = []
@@ -87,18 +84,64 @@ def totalrow(mat):
     return total
 
 def classify(buf):
-    global x, y1, y2, y3
-    y1 = []
-    y2 = []
-    y3 = []
-    x = range(len(buf))
-    for line in buf:
-        y1.append(line[0])
-        y2.append(line[1])
-        y3.append(line[2])
     print 'doing classification'
     features = extractfeatures(buf)
-    print 'features: ', features
+    trainX = []
+    trainY = []
+
+    file = open('traindata.txt')
+    for line in file:
+        data = []
+        for d in line.split(','):
+            if d != '\n':
+                data.append(float(d))
+        # data = [float(d) for d in line.split(',')]
+        trainX.append(data)
+    file.close()
+
+    file = open('trainout.txt')
+    for line in file:
+        data = []
+        for d in line.split(','):
+            if d != '\n':
+                data.append(float(d))
+        trainY.append(data)
+    file.close()
+
+    trainX, trainY = np.array(trainX), np.array(trainY)
+    testX = np.array(buf)
+
+    #CREATE NETWORK
+    nnet = cb.Network()
+
+    #CREATE LAYERS
+    Lin = cb.Layer(12)
+    Lhidden = cb.Layer( 5, cb.LogisticNeuron)
+    Lout = cb.Layer( 1, cb.LogisticNeuron)
+    bias = cb.Layer( 1, cb.BiasUnit)
+
+    #ADD LAYERS TO NETWORK
+    nnet.addInputLayer(Lin)
+    nnet.addLayer(Lhidden)
+    nnet.addOutputLayer(Lout)
+    nnet.addAutoInputLayer(bias)
+
+    #CONNECT LAYERS
+    Lin.connectTo(Lhidden)
+    Lhidden.connectTo(Lout)
+    bias.connectTo(Lhidden)
+    bias.connectTo(Lout)
+
+    #CREATE BATCH TRAINER
+    rate = 0.1
+    batch = cb.Trainer( nnet, trainX, trainY, rate )
+
+    #TRAIN
+    # t1 = time()
+    batch.epochs(15)
+    # print "Time CyBrain {}".format(time()-t1)
+    result = nnet.activateWith(testX[0], return_value= True)
+    predict = result
 
 
 def extractfeatures(buf):
