@@ -13,11 +13,18 @@ class jarvis_planner_pub(object):
         r = rospy.Rate(1) # 1hz
         self.counter = 0
         self.num = 0
+        self.transition = 0
     
         while not rospy.is_shutdown():
-            rospy.Subscriber('PlanCommand', PlanCommand, self.callback)
-            print self.counter
-            self.counter += 1
+            if self.transition == 0:
+                rospy.Subscriber('PlanCommand', PlanCommand, self.callback)
+                print self.counter
+                self.counter += 1
+            
+            if self.transition == 1:
+                print 'base plan ready'
+                pub.publish(True)
+            
             r.sleep()
         
     def callback(self, userdata):
@@ -26,8 +33,8 @@ class jarvis_planner_pub(object):
             self.num += 1
             print self.num
             if self.num >= 5:
-                print 'plan ready'
-                pub.publish(True)
+                self.transition = 1
+                
         else:
             pub.publish(False)
         
