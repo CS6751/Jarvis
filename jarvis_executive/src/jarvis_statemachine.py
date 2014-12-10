@@ -75,8 +75,7 @@ class Basemove(smach.State):
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
                 pubPlan.publish(PlanCommand(plancommand = True))
                 rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
-                rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
-            
+               
             elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
@@ -98,7 +97,7 @@ class Basemove(smach.State):
                 self.counter += 1
                 return 'basemove_failed'
                
-            elif self.transition == 3:
+            elif self.transition == 4:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 4))
@@ -111,7 +110,7 @@ class Basemove(smach.State):
 
     def userForBasemove(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'stop' and self.transition == 0:
+        if userdata.id == 'stop' and (self.transition == 0 or self.transition == 2):
             print 'Heard "Stop!"'
             self.transition = 1
             
@@ -127,7 +126,7 @@ class Basemove(smach.State):
         
     def controlforBasemove(self, userdata):
         """callback for jarvis_controls"""
-        if userdata.data == 'base_control_done' and self.transition == 0:
+        if userdata.data == 'base_control_done' and self.transition == 2:
             print 'base successfully moved!'
             self.transition = 4
 
