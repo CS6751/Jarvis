@@ -20,7 +20,7 @@ class jarvis_planner_pub(object):
             self.counter += 1
             r.sleep()
         
-    def callback(userdata):
+    def callback(self, userdata):
         if userdata.plancommand:
             print 'begin planning for basemove'
             self.num += 1
