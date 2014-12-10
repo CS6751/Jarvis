@@ -22,7 +22,9 @@ class Stop(smach.State):
         rospy.loginfo('Executing state STOP')
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
-    
+        if self.counter > 0:
+            self.transition = 0
+        
         while not rospy.is_shutdown():
             pub.publish(Kill(kill = True))
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
