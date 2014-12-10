@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# license from conrell university CS 6751
+
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
