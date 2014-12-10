@@ -66,10 +66,11 @@ class Basemove(smach.State):
             rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
             rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
             self.timedelay += 1
+            print self.timedelay
             if self.transition == 1:
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 1))
-                self.transition = 0
+                self.transition = -1
                 return 'basemove_done'
             r.sleep()
 
