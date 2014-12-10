@@ -27,10 +27,10 @@ class Stop(smach.State):
             pub.publish(Kill(kill = True))
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
-                self.transition = 0
+                self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
                 return 'initiation'
             if self.transition == 2:
-                self.transition = 0
+                self.transition = -1
                 return 'armmove'  
             r.sleep()
             
