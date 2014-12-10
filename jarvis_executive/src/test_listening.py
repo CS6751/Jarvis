@@ -18,7 +18,7 @@ class listener(object):
             #rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
             #rospy.Subscriber('intents_trial', Intent, human_intent_callback)
             #rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
-            rospy.Subscriber('Kill', Kill, callback)
+            rospy.Subscriber('Kill', Kill, self.callback)
             self.num += 1
             r.sleep()
             
