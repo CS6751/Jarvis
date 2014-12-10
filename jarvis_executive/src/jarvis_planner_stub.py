@@ -21,6 +21,7 @@ class jarvis_planner_pub(object):
             if self.transition == 1:
                 print 'base plan ready'
                 self.transition = 0
+                self.num = 0
                 pub.publish(True)
                 
             r.sleep()
