@@ -25,13 +25,12 @@ class Stop(smach.State):
     
         while not rospy.is_shutdown():
             pub.publish(Kill(kill = True))
-            rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            if self.transition == 0:
+                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
                 return 'initiation'
-                break
             if self.transition == 2:
                 return 'armmove'  
-                break
             r.sleep()
             
     def userForStop(self, userdata):
