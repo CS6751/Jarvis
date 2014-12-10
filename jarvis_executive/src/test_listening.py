@@ -30,8 +30,8 @@ class listener(object):
             
 if __name__ == '__main__':
     rospy.init_node('test_listening', anonymous=True)
-    try:
-        listener()
-    except:
-        pass
+    #try:
+    listener()
+    #except:
+    #    pass
         
