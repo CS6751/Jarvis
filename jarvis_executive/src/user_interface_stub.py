@@ -50,14 +50,19 @@ def user_interface_pub():
             print 'move to base move 2nd time!!!!!!!'
             
         #'''    
-        if num == 90:
+        if num == 80:
             to = GoalID(id = 'grab')
             pub.publish(to)
             print 'move to grab!!!!!!!'
             
-        if num == 120:
+        if num == 90:
             stop = GoalID(id = 'stop')
-            pub.publish(stop)    
+            pub.publish(stop)  
+            
+        if num == 100:
+            to = GoalID(id = 'grab')
+            pub.publish(to)
+            print 'move to grab!!!!!!!'    
         
         #'''
         num = num+1
