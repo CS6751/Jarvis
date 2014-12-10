@@ -28,7 +28,8 @@ class Stop(smach.State):
         
         while not rospy.is_shutdown():
             pub.publish(Kill(kill = True))
-            rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            if self.transition == 0:
+                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
                 self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
                 self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
@@ -41,11 +42,11 @@ class Stop(smach.State):
             
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here' and self.transition == 0:
+        if userdata.id == 'come_here':
             print 'Heard "Come here!"'
             self.transition = 1
             
-        if userdata.id == 'grab' and self.transition == 0:
+        if userdata.id == 'grab':
             print 'Heard "Grab this!"'
             self.transition = 2
 
@@ -65,13 +66,16 @@ class Basemove(smach.State):
         pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
         r = rospy.Rate(10)
         if self.counter > 1:
-            self.transition = 0
             self.timedelay = 0
+            self.plantransition = False
+            self.transition = 0
     
         while not rospy.is_shutdown():
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
             if not self.plantransition:
                 pubPlan.publish(PlanCommand(plancommand = True))
+            else:
+                pubPlan.publish(PlanCommand(plancommand = False))
             rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
             rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
             self.timedelay += 1
@@ -100,10 +104,11 @@ class Basemove(smach.State):
             pubPlan.publish(PlanCommand(plancommand = False))
             pubCon.publish(Mode(mode = 2))
 
-        elif self.timedelay >= 100:
+        if self.timedelay >= 100:
             print 'Maximum time passed for planning... Plan Failed!'
             pubPlan.publish(PlanCommand(plancommand = False))
             pubCon.publish(Mode(mode = 3))
+            self.transition = 2
             return 'basemove_failed'
 
     def controlforBasemove(self, userdata):
