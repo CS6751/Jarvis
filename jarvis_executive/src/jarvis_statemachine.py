@@ -66,6 +66,7 @@ class Basemove(smach.State):
         r = rospy.Rate(10)
         if self.counter > 1:
             self.transition = 0
+            self.timedelay = 0
     
         while not rospy.is_shutdown():
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
