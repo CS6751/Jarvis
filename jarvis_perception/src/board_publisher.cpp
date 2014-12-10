@@ -5,7 +5,7 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <jarvis_perception/GraspBox.h>
-#include <jarvis_perception/GripArray.h>
+#include <jarvis_perception/GraspArray.h>
 
 float BOARD_X = 0.002;
 float BOARD_Y = 0.1528;
@@ -22,7 +22,7 @@ float Y[4]={CENTER_Y,CENTER_Y-BOARD_Y/2,
 		      CENTER_Y-BOARD_Y/2, CENTER_Y};
 float Z[4]={CENTER_Z+BOARD_Z/2, CENTER_Z+BOARD_Z/3,
 			CENTER_Z-BOARD_Z/3, CENTER_Z+BOARD_Z/3};
-float WEIGHTS[4] = {0.1 0.5 0.5 0.9};
+float WEIGHTS[4] = {0.1, 0.5, 0.5, 0.9};
 
 
 
@@ -62,7 +62,7 @@ class BoardGenerator
 	{
 	    jarvis_perception::GraspBox grasp;
 	    grasp.point = points[i];
-	    grasp.quat = quats[i];
+	    grasp.orientation = quats[i];
 	    grasp.weight = WEIGHTS[i];
 	    grasp_array[i] = grasp;
 	}

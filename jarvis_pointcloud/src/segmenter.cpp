@@ -19,6 +19,9 @@
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
+//Includes for euclidean segmenting
+#include <pcl/segmentation/extract_clusters.h>
+
 //Includes for filtering
 #include <pcl/filters/extract_indices.h>
 
@@ -51,9 +54,24 @@ class CloudDrawer
 	
 	//pcl::PointCloud<pcl::PointXYZ>::Ptr temp_ptr_;
 	//pcl::PointCloud<pcl::PointXYZ>::Ptr temp_ptr2_;
+	void euclideanSegment (const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
+		std::vector<pcl::PointIndices> &cluster_indices)
+	{
+	//    FPS_CALC_BEGIN;
+	    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+	    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree (new pcl::search::KdTree<pcl::PointXYZ> ());
+
+	    ec.setClusterTolerance (0.01); // 2cm
+	    ec.setMinClusterSize (50);
+	    ec.setMaxClusterSize (400);
+	    ec.setSearchMethod (tree);
+	    ec.setInputCloud (cloud);
+	    ec.extract (cluster_indices);
+	  //  FPS_CALC_END("euclideanSegmentation");
+	}
 
 	void filterPassThrough (const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,  
-	pcl::PointCloud<pcl::PointXYZ>	&result)
+		pcl::PointCloud<pcl::PointXYZ>	&result)
 	{
 	//    FPS_CALC_BEGIN;
 	    pcl::PassThrough<pcl::PointXYZ> pass;
@@ -109,14 +127,16 @@ class CloudDrawer
 	    pass.setFilterLimits(-0.1,0.1);
 	    pass.filter(*pass_cloud);
 
-	/////////////////////
+	
+	pcl::PointCloud<pcl::PointXYZ>::Ptr filt_cloud(new pcl::PointCloud<pcl::PointXYZ>);
+	    /////////////////////
 	// Find a plane in the target point cloud 
 	// //////////////////////////
 	    
 	    seg_.setOptimizeCoefficients (true);
 	seg_.setModelType(pcl::SACMODEL_PLANE);
 	seg_.setMethodType(pcl::SAC_RANSAC);
-	seg_.setDistanceThreshold(0.01);
+	seg_.setDistanceThreshold(0.005);
 	seg_.setInputCloud(pass_cloud);
 	seg_.segment (*inliers_, *coefficients_);
 	if (inliers_->indices.size () == 0)
@@ -132,15 +152,29 @@ class CloudDrawer
 	msg.data = out.str();
 	ROS_INFO("%s",msg.data.c_str());
 
-	//////////////////////////////////////
-	// Pull out the points in the plane
-	//////////////////////////////////////
 	pcl::ExtractIndices<pcl::PointXYZ> extract;
-	pcl::PointCloud<pcl::PointXYZ>::Ptr filt_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 	extract.setInputCloud(pass_cloud);
 	extract.setIndices(inliers_);
+	extract.setNegative(false);
+	extract.filter(*filt_cloud);
+	/////////////////////
+	// Euclidean Segment the cloud
+	///////////////////
+	/*
+	std::vector<pcl::PointIndices> cluster_indices;
+	euclideanSegment (pass_cloud, cluster_indices);
+	
+	if (cluster_indices.size() > 0)
+	{
+	pcl::PointIndices filt_indices = cluster_indices[0];
+	pcl::ExtractIndices<pcl::PointXYZ> extract;
+	extract.setInputCloud(pass_cloud);
+	//extract.setIndices(inliers_);
+	extract.setIndices(filt_indices);
 	extract.setNegative(true);
 	extract.filter(*filt_cloud);
+	}
+	*/
 	/////
 	// Turn pass_cloud into output //
 	// ///
@@ -160,3 +194,9 @@ ROS_INFO("segmenter started");
     CloudDrawer pd; //Construct class
     ros::spin(); // Run until interupted 
 };
+	
+//TODO try to copy this guy
+// pcl::PointIndices::Ptr filt_indices(&cluster_indices[0]);
+	//////////////////////////////////////
+	// Pull out the points in the plane
+	//////////////////////////////////////
