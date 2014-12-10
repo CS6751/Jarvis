@@ -10,7 +10,7 @@ class jarvis_planner_pub(object):
     
     def __init__(self):
         pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
-        r = rospy.Rate(1) # 1hz
+        r = rospy.Rate(0.1) # 0.1hz
         self.num = 0
         self.transition = 0
     
