@@ -13,7 +13,6 @@ class listener(object):
     def __init__(self):
         self.num = 0
         r = rospy.Rate(10)
-        rospy.init_node('test_listening', anonymous=True)
         
         while not rospy.is_shutdown():
             #rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
@@ -30,4 +29,9 @@ class listener(object):
             print self.num
             
 if __name__ == '__main__':
-    listener()
+    rospy.init_node('test_listening', anonymous=True)
+    try:
+        listener()
+    except:
+        pass
+        
