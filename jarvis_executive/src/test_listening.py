@@ -19,7 +19,7 @@ def listener():
     num = 0
     main()
     
-def main()
+def main():
     rospy.init_node('test_listening', anonymous=True)
     #rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
     #rospy.Subscriber('intents_trial', Intent, human_intent_callback)
