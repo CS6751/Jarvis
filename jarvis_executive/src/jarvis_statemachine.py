@@ -25,8 +25,7 @@ class Stop(smach.State):
     
         while not rospy.is_shutdown():
             pub.publish(Kill(kill = True))
-            if self.transition == 0:
-                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
                 return 'initiation'
             if self.transition == 2:
@@ -35,11 +34,11 @@ class Stop(smach.State):
             
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here':
+        if userdata.id == 'come_here' and self.transition == 0:
             print 'Heard "Come here!"'
             self.transition = 1
             
-        elif userdata.id == 'grab':
+        if userdata.id == 'grab' and self.transition == 0:
             print 'Heard "Grab this!"'
             self.transition = 2
 
