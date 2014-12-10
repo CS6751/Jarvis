@@ -8,7 +8,7 @@ from human_intent.msg import Intent
 from jarvis_planner.msg import PlanStatus
 from jarvis_executive.msg import *
 
-num = 0
+
 def callback(userdata):
     if userdata.kill:
         print 'listening Kill topic!!!'
@@ -24,4 +24,5 @@ def listener():
     rospy.spin()
     
 if __name__ == '__main__':
+    num = 0
     listener()
