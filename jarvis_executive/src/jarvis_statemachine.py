@@ -20,10 +20,9 @@ class Stop(smach.State):
         
     def execute(self, userdata):
         rospy.loginfo('Executing state STOP')
-        print 'The number of time this state is executed:',self.counter
+        print 'The number of time this state is executing:',self.counter
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
-        print self.counter
         if self.counter > 1:
             self.transition = 0
         
