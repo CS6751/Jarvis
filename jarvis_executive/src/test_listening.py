@@ -1,27 +1,12 @@
+#!/usr/bin/env python
+# license from conrell university CS 6751
+# wow
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
 from human_intent.msg import Intent
 from jarvis_planner.msg import PlanStatus
 from jarvis_executive.msg import *
-
-'''
-def user_interface_callback(userdata):
-    if userdata.id== '10':
-      print 'correct!!!'
-    else:
-      print 'go away..'
-def human_intent_callback(userdata):
-    if userdata.intent == 1:
-        print 'intent Hold!'
-    else:
-	    print 'intent Adjust!'
-def jarvis_planner_callback(userdata):
-    if userdata.PlanStatus == True:
-    	print 'plan ready!'
-    else:
-    	print 'wait for planning...'
-'''
 
 num = 0
 def callback(userdata):
