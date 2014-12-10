@@ -20,9 +20,8 @@ def listener():
     #rospy.Subscriber('intents_trial', Intent, human_intent_callback)
     #rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
     rospy.Subscriber('Kill', Kill, callback)
-    num += 1
+    
     rospy.spin()
     
 if __name__ == '__main__':
-    num = 0
     listener()
