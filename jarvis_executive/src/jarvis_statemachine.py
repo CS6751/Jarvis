@@ -27,8 +27,8 @@ class Stop(smach.State):
             self.transition = 0
         
         while not rospy.is_shutdown():
-            pub.publish(Kill(kill = True))
             if self.transition == 0:
+                pub.publish(Kill(kill = True))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
                 self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
@@ -42,11 +42,11 @@ class Stop(smach.State):
             
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here':
+        if userdata.id == 'come_here' and self.transition == 0:
             print 'Heard "Come here!"'
             self.transition = 1
             
-        if userdata.id == 'grab':
+        if userdata.id == 'grab' and self.transition == 0:
             print 'Heard "Grab this!"'
             self.transition = 2
 
