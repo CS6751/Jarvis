@@ -53,29 +53,34 @@ class Stop(smach.State):
 class Basemove(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['basemove_done','basemove_failed'])
-        self.counter = 0
+        self.counter = 1
         self.timedelay = 0  # keep the time delay for planning upto 10s
         self.plantransition = False  # True iff plan is ready for transition 
         self.transition = 0
 
     def execute(self, userdata):
         rospy.loginfo('Executing state BASEMOVE')
+        print 'The number of time this state is executing:',self.counter
         pubPlan = rospy.Publisher('PlanCommand', PlanCommand, queue_size=10)
         pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
         r = rospy.Rate(10)
+        if self.counter > 1:
+            self.transition = 0
     
         while not rospy.is_shutdown():
+            print self.timedelay
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
             if not self.plantransition:
                 pubPlan.publish(PlanCommand(plancommand = True))
             rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
             rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
             self.timedelay += 1
-            print self.timedelay
+            
             if self.transition == 1:
+                self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 1))
-                self.transition = -1
+                self.counter += 1
                 return 'basemove_done'
             r.sleep()
 
