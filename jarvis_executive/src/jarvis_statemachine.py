@@ -49,6 +49,7 @@ class Basemove(smach.State):
         self.counter = 0
         self.timedelay = 0  # keep the time delay for planning upto 10s
         self.plantransition = False  # True iff plan is ready for transition 
+        self.transition = 0
 
     def execute(self, userdata):
         rospy.loginfo('Executing state BASEMOVE')
@@ -63,16 +64,18 @@ class Basemove(smach.State):
             rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
             rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
             self.timedelay += 1
+            if self.transition = 1
+                pubPlan.publish(PlanCommand(plancommand = False))
+                pubCon.publish(Mode(mode = 1))
+                return 'basemove_done'
             r.sleep()
 
     def userForBasemove(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'stop':
+        if userdata.id == 'stop' and self.transition == 0:
             print 'Heard "Stop!"'
-            pubPlan.publish(PlanCommand(plancommand = False))
-            pubCon.publish(Mode(mode = 1))
-            return 'basemove_done'
-        
+            self.transition = 1
+            
     def planForBasemove(self, userdata):
         """callback for jarvis_planner"""
         if userdata.PlanStatus:
