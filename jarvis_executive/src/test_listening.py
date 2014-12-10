@@ -12,7 +12,7 @@ from jarvis_executive.msg import *
 def callback(userdata):
     if userdata.kill:
         print 'listening Kill topic!!!'
-        print num
+        rospy.loginfo(userdata)
     	
 def listener():
     rospy.init_node('test_listening', anonymous=True)
