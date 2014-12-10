@@ -37,7 +37,7 @@ def prediction():
     rospy.spin()
 
 def callback(msg):
-    global buf, prev, curr, spark
+    global buf, prev, curr, spark, predict
     if msg.name[0]=='arm_joint_1':
         data = msg.position
         curr = data[1:4]
@@ -47,12 +47,13 @@ def callback(msg):
                 buf.append(prev)
                 buf.append(curr)
                 spark = 1
+                predict = 0
         else:
             buf.append(curr)
             if len(buf) == buflength:
                 classify(buf)
                 buf = []
-                spark = 0
+                # spark = 0
             total = totalrow(buf)
         prev = curr
 
@@ -74,7 +75,7 @@ def totalrow(mat):
     return total
 
 def classify(buf):
-    global predict, x
+    global predict, x, spark
     x = range(len(buf))
     print 'doing classification'
     features = extractfeatures(buf)
@@ -100,7 +101,7 @@ def classify(buf):
     file.close()
 
     trainX, trainY = np.array(trainX), np.array(trainY)
-    testX = np.array(buf)
+    testX = np.array(extractfeatures(buf))
 
     #CREATE NETWORK
     nnet = cb.Network()
@@ -131,14 +132,16 @@ def classify(buf):
     # t1 = time()
     batch.epochs(15)
     # print "Time CyBrain {}".format(time()-t1)
-    result = nnet.activateWith(testX[0], return_value= True)
-    predict = result[0]
-    predict = predict[0]
-    if float(str(predict))< 0.37 :
+    result = nnet.activateWith(testX, return_value= True)
+    pred = result[0]
+    pred = pred[0]
+    print predict
+    if float(str(pred)) > 0.37 :
         predict = 1
     else:
         predict = 0
     print predict
+    spark = 0
 
 
 def extractfeatures(buf):
