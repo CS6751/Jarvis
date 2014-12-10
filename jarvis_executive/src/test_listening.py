@@ -17,16 +17,14 @@ def callback(userdata):
     	
 def listener():
     num = 0
-    main()
     
-def main():
-    rospy.init_node('test_listening', anonymous=True)
-    #rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
-    #rospy.Subscriber('intents_trial', Intent, human_intent_callback)
-    #rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
-    rospy.Subscriber('Kill', Kill, callback)
-    num += 1
-    rospy.spin()
-    
+    while not rospy.is_shutdown():
+        rospy.init_node('test_listening', anonymous=True)
+        #rospy.Subscriber('robot_cmd_trial', GoalID, user_interface_callback)
+        #rospy.Subscriber('intents_trial', Intent, human_intent_callback)
+        #rospy.Subscriber('PlanStatus_trial', PlanStatus, jarvis_planner_callback)
+        rospy.Subscriber('Kill', Kill, callback)
+        num += 1
+
 if __name__ == '__main__':
     listener()
