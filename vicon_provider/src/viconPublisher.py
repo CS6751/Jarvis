@@ -30,21 +30,21 @@ class ViconPublisher:
         self.s = _pyvicon.ViconStreamer()
         self.s.connect(self.host,self.port)
 
-        self.s.selectStreams(["Time", self.x, self.y, self.theta])
+	self.s.selectStreams(["Time", self.x, self.y, self.theta])
 
-        self.s.startStreams()
+	self.s.startStreams()
 
-        # Wait for first data to come in
-        # while self.s.getData() is None: pass
-
-        while not rospy.is_shutdown():
-            print self.s.getData()
-        #br.sendTransform((msg.x, msg.y, 0),
-        #             tf.transformations.quaternion_from_euler(0, 0, msg.theta),
-        #             rospy.Time.now(),
-        #             turtlename,
-        #             "world")
-
+	# Wait for first data to come in
+	# while self.s.getData() is None: pass
+	rate = rospy.rate(10.0)
+	while not rospy.is_shutdown():
+		print self.s.getData()
+		#br.sendTransform((msg.x, msg.y, 0),
+		#             tf.transformations.quaternion_from_euler(0, 0, msg.theta),
+#             rospy.Time.now(),
+#             turtlename,
+#             "world")
+		rate.sleep()
     def _stop(self):
         print "Vicon pose handler quitting..."
         self.s.stopStreams()

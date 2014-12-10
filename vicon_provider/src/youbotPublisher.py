@@ -37,15 +37,10 @@ class ViconPublisher:
         self.s.startStreams()
 
         # Wait for first data to come in
-        # while self.s.getData() is None: pass
+        while self.s.getData() is None: pass
 
         while not rospy.is_shutdown():
             print self.s.getData()
-        #br.sendTransform((msg.x, msg.y, 0),
-        #             tf.transformations.quaternion_from_euler(0, 0, msg.theta),
-        #             rospy.Time.now(),
-        #             turtlename,
-        #             "world")
             pose = self.getPose()
             br.sendTransform((pose[1],pose[2],pose[3]),
                     tf.transformations.quaternion_from_euler(0,0,pose[4]),
@@ -63,7 +58,7 @@ class ViconPublisher:
         (t, x, y, z, o) = self.s.getData()
         (t, x, y, z, o) = [t/100, x/1000, y/1000, z/1000, o]
 
-        return array([x, y, o])
+        return array([x, y,z, o])
 
 if __name__ == "__main__":
     rospy.init_node('youbotPublisher')
