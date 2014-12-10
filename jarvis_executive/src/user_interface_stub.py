@@ -36,17 +36,17 @@ def user_interface_pub():
             pub.publish(to)
             print 'move to grab!!!!!!!'
             
-        if num == 31:
-            tt = GoalID(id = None)
-            pub.publish(tt)
+        #if num == 31:
+        #    tt = GoalID(id = None)
+        #    pub.publish(tt)
 
         if num == 50:
             stop = GoalID(id = 'stop')
             pub.publish(stop)
             
-        if num == 51:
-            mm = GoalID(id = None)
-            pub.publish(mm)
+        #if num == 51:
+        #    mm = GoalID(id = None)
+        #    pub.publish(mm)
         num = num+1
         r.sleep()
 '''
