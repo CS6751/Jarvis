@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # license from conrell university CS 6751
-<<<<<<< HEAD
-# wow
-=======
 
->>>>>>> f778f1b094290d2315e6f50e123addb77039848f
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
