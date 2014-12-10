@@ -30,11 +30,11 @@ class Stop(smach.State):
             if self.transition == 0:
                 pub.publish(Kill(kill = True))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
-            if self.transition == 1:
+            elif self.transition == 1:
                 self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
                 self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
                 return 'initiation'
-            if self.transition == 2:
+            elif self.transition == 2:
                 self.transition = -1
                 self.counter += 1
                 return 'armmove'  
@@ -71,22 +71,33 @@ class Basemove(smach.State):
             self.transition = 0
     
         while not rospy.is_shutdown():
-            rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
-            if not self.plantransition:
+            if self.transition == 0:
+                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
                 pubPlan.publish(PlanCommand(plancommand = True))
-            else:
-                pubPlan.publish(PlanCommand(plancommand = False))
-            rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
-            rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
+                rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
+                rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
             self.timedelay += 1
             
-            if self.transition == 1:
+            elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 1))
                 self.counter += 1
                 return 'basemove_done'
-                
+               
+            elif self.transition == 2:
+                self.transition = -1
+                pubPlan.publish(PlanCommand(plancommand = False))
+                pubCon.publish(Mode(mode = 3))
+                self.counter += 1
+                return 'basemove_failed'
+               
+            elif self.transition == 3:
+                self.transition = -1
+                pubPlan.publish(PlanCommand(plancommand = False))
+                pubCon.publish(Mode(mode = 4))
+                return 'basemove_done'
+               
             print self.timedelay
             r.sleep()
 
@@ -98,26 +109,19 @@ class Basemove(smach.State):
             
     def planForBasemove(self, userdata):
         """callback for jarvis_planner"""
-        if userdata.PlanStatus:
+        if userdata.PlanStatus and self.transition == 0:
             print 'Basemove plan is ready!"'
-            self.plantransition = True
-            pubPlan.publish(PlanCommand(plancommand = False))
             pubCon.publish(Mode(mode = 2))
-
-        if self.timedelay >= 100:
+            
+        if self.timedelay >= 100 and self.transition == 0:
             print 'Maximum time passed for planning... Plan Failed!'
-            pubPlan.publish(PlanCommand(plancommand = False))
-            pubCon.publish(Mode(mode = 3))
             self.transition = 2
-            return 'basemove_failed'
-
+        
     def controlforBasemove(self, userdata):
         """callback for jarvis_controls"""
-        if userdata.data == 'base_control_done':
+        if userdata.data == 'base_control_done' and self.transition == 0:
             print 'base successfully moved!'
-            pubPlan.publish(PlanCommand(plancommand = False))
-            pubCon.publish(Mode(mode = 4))
-            return 'basemove_done'
+            self.transition = 3
 
 '''
 class Armmove(smach.State):
