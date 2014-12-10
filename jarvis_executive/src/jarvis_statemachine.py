@@ -16,6 +16,7 @@ class Stop(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
         self.counter = 0
+        self.transition = 0
         
     def execute(self, userdata):
         rospy.loginfo('Executing state STOP')
@@ -25,16 +26,22 @@ class Stop(smach.State):
         while not rospy.is_shutdown():
             pub.publish(Kill(kill = True))
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            if self.transition == 1:
+                return 'initiation'
+            if self.transition == 2:
+                return 'armmove'  
+                
             r.sleep()
             
     def userForStop(self, userdata):
         """callback for user_interface"""
         if userdata.id == 'come_here':
             print 'Heard "Come here!"'
-            return 'initiation'
+            self.transition = 1
+            
         elif userdata.id == 'grab':
             print 'Heard "Grab this!"'
-            return 'armmove'
+            self.transition = 2
 
 
 class Basemove(smach.State):
