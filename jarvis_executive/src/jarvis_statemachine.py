@@ -22,6 +22,7 @@ class Stop(smach.State):
         rospy.loginfo('Executing state STOP')
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
+        print self.counter
         if self.counter > 0:
             self.transition = 0
         
