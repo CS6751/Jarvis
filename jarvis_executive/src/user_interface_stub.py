@@ -44,9 +44,11 @@ def user_interface_pub():
             stop = GoalID(id = 'stop')
             pub.publish(stop)
             
-        #if num == 51:
-        #    mm = GoalID(id = None)
-        #    pub.publish(mm)
+        if num == 70:
+            toBasemove = GoalID(id = 'come_here')
+            pub.publish(toBasemove)
+            print 'move to base move 2nd time!!!!!!!'
+        
         num = num+1
         r.sleep()
 '''
