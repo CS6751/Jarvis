@@ -15,15 +15,16 @@ from jarvis_executive.msg import *
 class Stop(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
-        self.counter = 0
+        self.counter = 1
         self.transition = 0
         
     def execute(self, userdata):
         rospy.loginfo('Executing state STOP')
+        print 'The number of time this state is executed:',self.counter
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
         print self.counter
-        if self.counter > 0:
+        if self.counter > 1:
             self.transition = 0
         
         while not rospy.is_shutdown():
@@ -31,9 +32,11 @@ class Stop(smach.State):
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
                 self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
+                self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
                 return 'initiation'
             if self.transition == 2:
                 self.transition = -1
+                self.counter += 1
                 return 'armmove'  
             r.sleep()
             
