@@ -85,8 +85,7 @@ class Basemove(smach.State):
                
             elif self.transition == 2:
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
-                pubPlan.publish(PlanCommand(plancommand = True))
-                rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
+                pubPlan.publish(PlanCommand(plancommand = False))
                 rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
                 pubCon.publish(Mode(mode = 2))
                 
