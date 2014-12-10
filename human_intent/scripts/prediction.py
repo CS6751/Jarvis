@@ -6,7 +6,7 @@ import rospy
 import numpy as np
 import cybrain as cb
 from std_msgs.msg import String
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 buf = []
 prev = []
