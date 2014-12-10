@@ -85,6 +85,13 @@ class Basemove(smach.State):
                 return 'basemove_done'
                
             elif self.transition == 2:
+                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
+                pubPlan.publish(PlanCommand(plancommand = True))
+                rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
+                rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
+                pubCon.publish(Mode(mode = 2))
+                
+            elif self.transition == 3: 
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 3))
@@ -95,6 +102,7 @@ class Basemove(smach.State):
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 4))
+                self.counter += 1
                 return 'basemove_done'
             
             self.timedelay += 1   
@@ -111,17 +119,17 @@ class Basemove(smach.State):
         """callback for jarvis_planner"""
         if userdata.PlanStatus and self.transition == 0:
             print 'Basemove plan is ready!"'
-            pubCon.publish(Mode(mode = 2))
+            self.transition = 2
             
         if self.timedelay >= 100 and self.transition == 0:
             print 'Maximum time passed for planning... Plan Failed!'
-            self.transition = 2
+            self.transition = 3
         
     def controlforBasemove(self, userdata):
         """callback for jarvis_controls"""
         if userdata.data == 'base_control_done' and self.transition == 0:
             print 'base successfully moved!'
-            self.transition = 3
+            self.transition = 4
 
 '''
 class Armmove(smach.State):
