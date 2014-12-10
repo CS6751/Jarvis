@@ -68,7 +68,6 @@ class Basemove(smach.State):
             self.transition = 0
     
         while not rospy.is_shutdown():
-            print self.timedelay
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
             if not self.plantransition:
                 pubPlan.publish(PlanCommand(plancommand = True))
@@ -82,6 +81,8 @@ class Basemove(smach.State):
                 pubCon.publish(Mode(mode = 1))
                 self.counter += 1
                 return 'basemove_done'
+                
+            print self.timedelay
             r.sleep()
 
     def userForBasemove(self, userdata):
