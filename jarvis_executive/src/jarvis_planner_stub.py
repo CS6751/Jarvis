@@ -35,10 +35,7 @@ class jarvis_planner_pub(object):
             if self.num >= 5:
                 self.transition = 1
                 
-        else:
-            pub.publish(False)
-        
-
+       
 if __name__ == '__main__':
     rospy.init_node('jarvis_planner_stub', anonymous=True)
     try:
