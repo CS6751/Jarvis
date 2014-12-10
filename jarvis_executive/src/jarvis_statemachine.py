@@ -27,8 +27,10 @@ class Stop(smach.State):
             pub.publish(Kill(kill = True))
             rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             if self.transition == 1:
+                self.transition = 0
                 return 'initiation'
             if self.transition == 2:
+                self.transition = 0
                 return 'armmove'  
             r.sleep()
             
@@ -67,6 +69,7 @@ class Basemove(smach.State):
             if self.transition == 1:
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 1))
+                self.transition = 0
                 return 'basemove_done'
             r.sleep()
 
