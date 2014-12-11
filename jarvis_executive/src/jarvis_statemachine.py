@@ -119,13 +119,12 @@ class Basemove(smach.State):
             
     def planForBasemove(self, userdata):
         """callback for jarvis_planner"""
+        if (self.timedelay > 5) and (self.transition == 0):  # change to >= 100 if plan succeeds
+            print 'Maximum time passed for planning... Plan Failed!'
+            self.transition = 3
         if userdata.PlanStatus and self.transition == 0:
             print 'Basemove plan is ready!"'
             self.transition = 2
-            
-        elif (self.timedelay > 5) and (self.transition == 0):  # change to >= 100 if plan succeeds
-            print 'Maximum time passed for planning... Plan Failed!'
-            self.transition = 3
         
     def controlforBasemove(self, userdata):
         """callback for jarvis_controls"""
