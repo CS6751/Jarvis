@@ -17,6 +17,7 @@ class Stop(smach.State):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
         self.counter = 1
         self.transition = 0
+        self.timedelay = 0
         
     def execute(self, userdata):
         rospy.loginfo('Executing state STOP')
@@ -25,6 +26,7 @@ class Stop(smach.State):
         r = rospy.Rate(10)
         if self.counter > 1:
             self.transition = 0
+            self.timedelay = 0
         
         while not rospy.is_shutdown():
             if self.transition == 0:
@@ -37,7 +39,9 @@ class Stop(smach.State):
             elif self.transition == 2:
                 self.transition = -1
                 self.counter += 1
-                return 'armmove'  
+                return 'armmove' 
+            self.timedelay += 1   
+            print self.timedelay
             r.sleep()
             
     def userForStop(self, userdata):
