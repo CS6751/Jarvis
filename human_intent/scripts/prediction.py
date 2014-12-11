@@ -27,7 +27,7 @@ def prediction():
     sub = rospy.Subscriber('joint_states',JointState,callback)
 
     print 'publish' 
-    pub = rospy.Publisher('intents', String, queue_size=10)
+    pub = rospy.Publisher('intents', String)
     r = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         inte = str(predict)
@@ -82,7 +82,7 @@ def classify(buf):
     trainX = []
     trainY = []
 
-    file = open('traindata.txt')
+    file = open('testdata.txt')
     for line in file:
         data = []
         for d in line.split(','):
@@ -91,7 +91,7 @@ def classify(buf):
         trainX.append(data)
     file.close()
 
-    file = open('trainout.txt')
+    file = open('testout.txt')
     for line in file:
         data = []
         for d in line.split(','):
@@ -108,7 +108,7 @@ def classify(buf):
 
     #CREATE LAYERS
     Lin = cb.Layer(12)
-    Lhidden = cb.Layer( 5, cb.LogisticNeuron)
+    Lhidden = cb.Layer( 10, cb.LogisticNeuron)
     Lout = cb.Layer( 1, cb.LogisticNeuron)
     bias = cb.Layer( 1, cb.BiasUnit)
 
@@ -130,13 +130,13 @@ def classify(buf):
 
     #TRAIN
     # t1 = time()
-    batch.epochs(15)
+    batch.epochs(100)
     # print "Time CyBrain {}".format(time()-t1)
     result = nnet.activateWith(testX, return_value= True)
     pred = result[0]
     pred = pred[0]
-    print predict
-    if float(str(pred)) > 0.37 :
+    print result
+    if float(str(pred)) > 0.5 :
         predict = 1
     else:
         predict = 0
