@@ -27,14 +27,15 @@ nnet = ''
 
 def prediction():
 
-    print 'train network'
+    print 'train network....'
     trainNetwork()
+    print 'trained!'
 
     rospy.init_node('temp')
-    print 'starting'
+    print 'starting subscriber'
     sub = rospy.Subscriber('joint_states',JointState,callback)
 
-    print 'publish' 
+    print 'publishing' 
     pub = rospy.Publisher('intents', String, queue_size=10)
     # pub = rospy.Publisher('intents', String)
     r = rospy.Rate(10) # 10hz
