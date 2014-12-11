@@ -114,7 +114,7 @@ class Basemove(smach.State):
                 self.counter += 1
                 return 'basemove_done'
             self.timedelay += 1   
-            print self.counter, 'times execution: BASEMOVE ( Time elasped:',self.timedelay,') Transition =',self.transition
+            print self.counter, 'BASEMOVE ( time:',self.timedelay,')' 
             self.timedelay
             r.sleep()
 
