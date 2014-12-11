@@ -1,4 +1,9 @@
 <launch>
+    <include file="$(find openni_launch)/launch/openni.launch" /> 
     <node pkg="jarvis_perception" name="object_publisher" type="object_publisher.py"/>
     <node pkg="jarvis_perception" name="grip_server" type="grip_server.py"/>
+    <node pkg="jarvis_perception" type="kinect_tf_broadcaster" name="kinect_tf_broadcaster" />
+    <node pkg="openni_tracker" type="openni_tracker" name="body_tracker"/>
+    <node pkg="jarvis_perception" type="vector_maker" name="vector_maker"/>
+    <!--    <node pkg="jarvis_pointcloud" type="example" name="pc_of_interest" />-->
 </launch>

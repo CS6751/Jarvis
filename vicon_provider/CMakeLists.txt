@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(jarvis_perception)
+project(vicon_provider)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -9,22 +9,16 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
-tf_conversions
-
-  geometry_msgs
-  message_generation
-  cmake_modules
-  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Eigen REQUIRED)
+# find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
- catkin_python_setup()
+# catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -51,18 +45,18 @@ find_package(Eigen REQUIRED)
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   AxisAlignedBox.msg
-   GraspBox.msg
-   GraspArray.msg
- )
+# add_message_files(
+#   FILES
+#   Message1.msg
+#   Message2.msg
+# )
 
 ## Generate services in the 'srv' folder
- add_service_files(
-   FILES
-   ReturnGrips.srv
- )
+# add_service_files(
+#   FILES
+#   Service1.srv
+#   Service2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -72,11 +66,10 @@ find_package(Eigen REQUIRED)
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-   std_msgs
-   geometry_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#   std_msgs
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -89,16 +82,9 @@ find_package(Eigen REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-  LIBRARIES jarvis_perception
-  CATKIN_DEPENDS 
-  roscpp 
-  rospy 
-  std_msgs 
-  message_runtime
-  tf
-  tf_conversions
-  geometry_msgs
-  DEPENDS system_lib
+#  LIBRARIES vicon_provider
+#  CATKIN_DEPENDS roscpp rospy std_msgs tf
+#  DEPENDS system_lib
 )
 
 ###########
@@ -110,30 +96,25 @@ catkin_package(
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${EIGEN_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(jarvis_perception
-#   src/${PROJECT_NAME}/jarvis_perception.cpp
+# add_library(vicon_provider
+#   src/${PROJECT_NAME}/vicon_provider.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(jarvis_perception_node src/jarvis_perception_node.cpp)
-add_executable(kinect_tf_broadcaster src/kinect_tf_broadcaster.cpp)
-add_executable(vector_maker src/vector_maker.cpp)
-add_executable(board_publisher src/board_publisher.cpp)
+# add_executable(vicon_provider_node src/vicon_provider_node.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(jarvis_perception_node jarvis_perception_generate_messages_cpp)
+# add_dependencies(vicon_provider_node vicon_provider_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(jarvis_perception_node
+# target_link_libraries(vicon_provider_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(kinect_tf_broadcaster ${catkin_LIBRARIES})
-target_link_libraries(vector_maker ${catkin_LIBRARIES})
-target_link_libraries(board_publisher ${catkin_LIBRARIES})
+
 #############
 ## Install ##
 #############
@@ -149,7 +130,7 @@ target_link_libraries(board_publisher ${catkin_LIBRARIES})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS jarvis_perception jarvis_perception_node
+# install(TARGETS vicon_provider vicon_provider_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -174,7 +155,7 @@ target_link_libraries(board_publisher ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_jarvis_perception.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_vicon_provider.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
