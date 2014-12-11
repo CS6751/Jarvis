@@ -123,7 +123,7 @@ class Basemove(smach.State):
             print 'Basemove plan is ready!"'
             self.transition = 2
         else:
-            if self.timedelay >= 10: 
+            if (self.timedelay >= 10) and self.transition == 0: 
                 print 'Maximum time passed for planning... Plan Failed!'
                 self.transition = 3
         
