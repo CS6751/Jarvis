@@ -12,22 +12,31 @@ buf = []
 prev = []
 curr = []
 buflength = 15
-threshold = 0.005
+threshold = 0.003
+# three flags
 spark = 0
+moving = 0
+classified = 0
+# prediction made 0:stop state 1:adjust state 2:take away state
 predict = 0
 x = []
 yp1 = []
 yp2 = []
 yp3 = []
+nnet = ''
 
 def prediction():
+
+    print 'train network'
+    trainNetwork()
 
     rospy.init_node('temp')
     print 'starting'
     sub = rospy.Subscriber('joint_states',JointState,callback)
 
     print 'publish' 
-    pub = rospy.Publisher('intents', String)
+    pub = rospy.Publisher('intents', String, queue_size=10)
+    # pub = rospy.Publisher('intents', String)
     r = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         inte = str(predict)
@@ -37,12 +46,17 @@ def prediction():
     rospy.spin()
 
 def callback(msg):
-    global buf, prev, curr, spark, predict
+    global buf, prev, curr, spark, predict, classified
     if msg.name[0]=='arm_joint_1':
         data = msg.position
         curr = data[1:4]
+        dif = diff(curr,prev)
+        # print 'classified: ',classified, 'diff: ', dif
+        if max(dif) < threshold and classified==1:
+            print 'low'
+            classified = 0
+            predict = 0
         if spark==0:
-            dif = diff(curr,prev)
             if max(dif) > threshold:
                 buf.append(prev)
                 buf.append(curr)
@@ -51,9 +65,11 @@ def callback(msg):
         else:
             buf.append(curr)
             if len(buf) == buflength:
-                classify(buf)
+                if classified == 0:
+                    classify(buf)
+                    classified = 1
                 buf = []
-                # spark = 0
+                spark = 0
             total = totalrow(buf)
         prev = curr
 
@@ -75,63 +91,11 @@ def totalrow(mat):
     return total
 
 def classify(buf):
-    global predict, x, spark
-    x = range(len(buf))
+    global predict, nnet
+
     print 'doing classification'
-    features = extractfeatures(buf)
-    trainX = []
-    trainY = []
-
-    file = open('testdata.txt')
-    for line in file:
-        data = []
-        for d in line.split(','):
-            if d != '\n':
-                data.append(float(d))
-        trainX.append(data)
-    file.close()
-
-    file = open('testout.txt')
-    for line in file:
-        data = []
-        for d in line.split(','):
-            if d != '\n':
-                data.append(float(d))
-        trainY.append(data)
-    file.close()
-
-    trainX, trainY = np.array(trainX), np.array(trainY)
     testX = np.array(extractfeatures(buf))
-
-    #CREATE NETWORK
-    nnet = cb.Network()
-
-    #CREATE LAYERS
-    Lin = cb.Layer(12)
-    Lhidden = cb.Layer( 10, cb.LogisticNeuron)
-    Lout = cb.Layer( 1, cb.LogisticNeuron)
-    bias = cb.Layer( 1, cb.BiasUnit)
-
-    #ADD LAYERS TO NETWORK
-    nnet.addInputLayer(Lin)
-    nnet.addLayer(Lhidden)
-    nnet.addOutputLayer(Lout)
-    nnet.addAutoInputLayer(bias)
-
-    #CONNECT LAYERS
-    Lin.connectTo(Lhidden)
-    Lhidden.connectTo(Lout)
-    bias.connectTo(Lhidden)
-    bias.connectTo(Lout)
-
-    #CREATE BATCH TRAINER
-    rate = 0.1
-    batch = cb.Trainer( nnet, trainX, trainY, rate )
-
-    #TRAIN
-    # t1 = time()
-    batch.epochs(100)
-    # print "Time CyBrain {}".format(time()-t1)
+  
     result = nnet.activateWith(testX, return_value= True)
     pred = result[0]
     pred = pred[0]
@@ -139,13 +103,13 @@ def classify(buf):
     if float(str(pred)) > 0.5 :
         predict = 1
     else:
-        predict = 0
+        predict = 2
     print predict
-    spark = 0
 
 
 def extractfeatures(buf):
     global yp1, yp2, yp3, x
+    x = range(len(buf))
     features = []
     link1 = []
     link2 = []
@@ -186,6 +150,59 @@ def avgdelta(l):
         return 0
     return abs(maximum-minimum)/abs(maxindex-minindex)
 
+def trainNetwork():
+    global nnet
+    trainX = []
+    trainY = []
+
+    file = open('testdata.txt')
+    for line in file:
+        data = []
+        for d in line.split(','):
+            if d != '\n':
+                data.append(float(d))
+        trainX.append(data)
+    file.close()
+
+    file = open('testout.txt')
+    for line in file:
+        data = []
+        for d in line.split(','):
+            if d != '\n':
+                data.append(float(d))
+        trainY.append(data)
+    file.close()
+
+    trainX, trainY = np.array(trainX), np.array(trainY)
+
+    #CREATE NETWORK
+    nnet = cb.Network()
+
+    #CREATE LAYERS
+    Lin = cb.Layer(12)
+    Lhidden = cb.Layer( 10, cb.LogisticNeuron)
+    Lout = cb.Layer( 1, cb.LogisticNeuron)
+    bias = cb.Layer( 1, cb.BiasUnit)
+
+    #ADD LAYERS TO NETWORK
+    nnet.addInputLayer(Lin)
+    nnet.addLayer(Lhidden)
+    nnet.addOutputLayer(Lout)
+    nnet.addAutoInputLayer(bias)
+
+    #CONNECT LAYERS
+    Lin.connectTo(Lhidden)
+    Lhidden.connectTo(Lout)
+    bias.connectTo(Lhidden)
+    bias.connectTo(Lout)
+
+    #CREATE BATCH TRAINER
+    rate = 0.1
+    batch = cb.Trainer( nnet, trainX, trainY, rate )
+
+    #TRAIN
+    # t1 = time()
+    batch.epochs(100)
 
 if __name__ == '__main__':
     try:
