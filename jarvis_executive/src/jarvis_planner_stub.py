@@ -10,7 +10,7 @@ class jarvis_planner_pub(object):
     
     def __init__(self):
         pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
-        r = rospy.Rate(0.1) # 0.1hz
+        r = rospy.Rate(10) # 10hz
         self.num = 0
         self.transition = 0
     
@@ -18,10 +18,13 @@ class jarvis_planner_pub(object):
             if self.transition == 0:
                 rospy.Subscriber('PlanCommand', PlanCommand, self.callback)
              
+            if self.transition == -1:
+                self.transition = 0 
+             
             if self.transition == 1:
                 print 'base plan ready'
-                self.transition = 0
                 pub.publish(True)
+                self.transition = -1
                 
             r.sleep()
         
@@ -29,8 +32,8 @@ class jarvis_planner_pub(object):
         if userdata.plancommand and self.transition == 0:
             print 'begin planning for basemove'
             self.num += 1
-            print self.num
-            if self.num >= 80:
+            #print self.num
+            if self.num >= 1000:
                 self.transition = 1
                 
        
