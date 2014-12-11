@@ -31,7 +31,7 @@ class jarvis_planner_pub(object):
         
     def callback(self, userdata):
         if userdata.plancommand and self.transition == 0:
-            print 'begin planning for basemove'
+            #print 'begin planning for basemove'
             self.num += 1
             #print self.num
             if self.num >= 1000:
