@@ -71,11 +71,13 @@ class Basemove(smach.State):
             self.transition = 0
     
         while not rospy.is_shutdown():
+            # Initial case
             if self.transition == 0:
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
                 pubPlan.publish(PlanCommand(plancommand = True))
                 rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
-               
+              
+            # when heard "Stop!"   
             elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
@@ -83,22 +85,24 @@ class Basemove(smach.State):
                 self.counter += 1
                 return 'basemove_done'
                
+            # when plan is ready to execute
             elif self.transition == 2:
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
                 pubPlan.publish(PlanCommand(plancommand = False))
                 rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
                 pubCon.publish(Mode(mode = 2))
-                
+            
+            # when plan fails
             elif self.transition == 3: 
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 3))
                 self.counter += 1
                 return 'basemove_failed'
-               
+            
+            # base finishes moving
             elif self.transition == 4:
                 self.transition = -1
-                pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 4))
                 self.counter += 1
                 return 'basemove_done'
@@ -119,7 +123,7 @@ class Basemove(smach.State):
             print 'Basemove plan is ready!"'
             self.transition = 2
             
-        elif (self.timedelay == 50) and self.transition == 0:  # change to >= 100 if plan succeeds
+        elif (self.timedelay > 50) and (self.transition == 0):  # change to >= 100 if plan succeeds
             print 'Maximum time passed for planning... Plan Failed!'
             self.transition = 3
         
