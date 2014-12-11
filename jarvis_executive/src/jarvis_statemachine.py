@@ -41,7 +41,7 @@ class Stop(smach.State):
                 self.counter += 1
                 return 'armmove' 
             self.timedelay += 1   
-            print self.timedelay
+            print self.counter, 'STOP ( time:',self.timedelay,')'
             r.sleep()
             
     def userForStop(self, userdata):
@@ -115,7 +115,6 @@ class Basemove(smach.State):
                 return 'basemove_done'
             self.timedelay += 1   
             print self.counter, 'BASEMOVE ( time:',self.timedelay,')' 
-            self.timedelay
             r.sleep()
 
     def userForBasemove(self, userdata):
