@@ -76,7 +76,9 @@ class Basemove(smach.State):
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
                 pubPlan.publish(PlanCommand(plancommand = True))
                 rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForBasemove)
-                
+            if (self.timedelay >= 30) and self.transition == 0: 
+                    print 'Maximum time passed for planning... Plan Failed!'
+                    self.transition = 3
               
             # when heard "Stop!"   
             elif self.transition == 1:
