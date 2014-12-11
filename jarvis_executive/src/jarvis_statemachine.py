@@ -113,9 +113,9 @@ class Basemove(smach.State):
                 pubCon.publish(Mode(mode = 4))
                 self.counter += 1
                 return 'basemove_done'
-            print self.transition
             self.timedelay += 1   
-            print self.timedelay
+                        print self.counter, 'times execution: BASEMOVE ( Time elasped:',self.timedelay,') Transition =',self.transition
+            self.timedelay
             r.sleep()
 
     def userForBasemove(self, userdata):
