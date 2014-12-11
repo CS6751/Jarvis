@@ -11,15 +11,16 @@ class jarvis_planner_pub(object):
     def __init__(self):
         pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
         r = rospy.Rate(10) # 10hz
-        self.num = 0
         self.transition = 0
-    
+        self.num = 0
+        
         while not rospy.is_shutdown():
             if self.transition == 0:
                 rospy.Subscriber('PlanCommand', PlanCommand, self.callback)
              
             if self.transition == -1:
-                self.transition = 0 
+                self.transition = 0
+                self.num = 0
              
             if self.transition == 1:
                 print 'base plan ready'
