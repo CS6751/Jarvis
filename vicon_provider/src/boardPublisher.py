@@ -8,7 +8,9 @@ from numpy import *
 import _pyvicon
 
 class ViconPublisher:
-    def __init__(self, host="10.0.0.102", port=800, x_VICON_name="Board:boardFront <t-X>", y_VICON_name="Board:boardFront <t-Y>", z_VICON_name="Board:boardFront <t-Z>", phi_VICON_name="Board:boardFront <a-X>", theta_VICON_name="Board:boardFront <a-Y>", psi_VICON_name="Board:boardFront <a-Z>"):
+    def __init__(self, host="10.0.0.102", port=800, \
+        x_VICON_name="Board:boardFront <t-X>", y_VICON_name="Board:boardFront <t-Y>", z_VICON_name="Board:boardFront <t-Z>", \
+        phi_VICON_name="Board:boardFront <a-X>", theta_VICON_name="Board:boardFront <a-Y>", psi_VICON_name="Board:boardFront <a-Z>"):
    # def __init__(self, host="10.0.0.102", port=800, x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>", theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
         
         """
@@ -37,23 +39,23 @@ class ViconPublisher:
         self.s.selectStreams(["Time", self.x, self.y, self.z, self.phi, self.theta, self.psi])
 
         self.s.startStreams()
-	rate = rospy.Rate(10.0)
+        rate = rospy.Rate(10.0)
         # Wait for first data to come in
         while self.s.getData() is None:
-	    print "Waiting for data..." 
-	    pass
-	print "Stream acquired"
+            print "Waiting for data..." 
+            pass
+        print "Stream acquired"
         while not rospy.is_shutdown():    
             print self.s.getData()
             pose = self.getPose()
-	    print "pose: "
+            print "pose: "
             print pose
             br.sendTransform((pose[1],pose[2],pose[3]),
                     tf.transformations.quaternion_from_euler(pose[4],pose[5],pose[6]),
-                    rospy.Time.now(),
+                    rospy.Time.now(),  # should we be use vicon time instead?
                     "board_tf",
                     "vicon");
- 	    rate.sleep()
+     	    rate.sleep()
 # Is any sort of sleep command needed?
     def _stop(self):
         print "board pose handler quitting..."
@@ -65,7 +67,7 @@ class ViconPublisher:
         (t, x, y, z, phi, theta, psi) = self.s.getData()
         (t, x, y, z, phi, theta, psi) = [t/100, x/1000, y/1000, z/1000, phi, theta, psi]
 
-        return array([x, y,z, phi, theta, psi])
+        return array([t, x, y, z, phi, theta, psi])
 
 if __name__ == "__main__":
     rospy.init_node('boardPublisher')

@@ -58,7 +58,7 @@ class ViconPublisher:
         (t, x, y, z, o) = self.s.getData()
         (t, x, y, z, o) = [t/100, x/1000, y/1000, z/1000, o]
 
-        return array([x, y,z, o])
+        return array([t, x, y, z, o])
 
 if __name__ == "__main__":
     rospy.init_node('youbotPublisher')

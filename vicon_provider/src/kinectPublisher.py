@@ -61,7 +61,7 @@ class ViconPublisher:
         (t, x, y, z, phi, theta, psi) = self.s.getData()
         (t, x, y, z, phi, theta, psi) = [t/100, x/1000, y/1000, z/1000, phi, theta, psi]
 
-        return array([x, y,z, phi, theta, psi])
+        return array([t, x, y, z, phi, theta, psi])
 
 if __name__ == "__main__":
     rospy.init_node('kinectPublisher')

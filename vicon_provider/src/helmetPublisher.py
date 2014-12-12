@@ -9,7 +9,9 @@ import _pyvicon
 
 class ViconPublisher:
     #def __init__(self, host="10.0.0.102", port=800, x_VICON_name="KUKAyouBot2:main body <t-X>", y_VICON_name="KUKAyouBot2:main body <t-Y>", theta_VICON_name="KUKAyouBot2:main body <a-Z>"):
-    def __init__(self, host="10.0.0.102", port=800, x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>",z_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Z>" , theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
+    def __init__(self, host="10.0.0.102", port=800, \
+        x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>", \
+        z_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Z>" , theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
         """
         Pose handler for VICON system
         host (string): The ip address of VICON system (default="10.0.0.102")
@@ -56,15 +58,14 @@ class ViconPublisher:
 
     def getPose(self, cached=False):
 
-        pose = self.s.getData()
-	(t, x, y, z, o) = self.s.getData()
+        (t, x, y, z, o) = self.s.getData()
         (t, x, y, z, o) = [t/100, x/1000, y/1000, z/1000, o]
 #	pose[0] = pose[0]/100
 #	pose[1] = pose[1]/1000
 #	pose[2] = pose[2]/1000
 #	pose[3] = pose[3]/1000
 
-        return pose
+        return array([t, x, y, z, o])
 
 if __name__ == "__main__":
     rospy.init_node('helmetPublisher')
