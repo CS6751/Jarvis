@@ -11,6 +11,8 @@ import roslib; roslib.load_manifest('pocketsphinx')
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
 import tf
+from numpy import *
+import matplotlib.pyplot as plt
 
 class UI_client:
 
@@ -32,29 +34,36 @@ class UI_client:
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
-        ## TODO: implement listener for person pose topic
         # listener = tf.TransformListener()
+        # try:
+        #     (self.person_trans,self.person_rot) = listener.lookupTransform('/person_tf', '/<box tf>', rospy.Time(0))
+        # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        #     continue
+
+        ## TODO: implement listener for person pose topic
 
         # rospy.wait_for_service('spawn')
         # spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
         # spawner(4, 2, 0, 'turtle2')
+
+        #Initialize the plot
+        # plt.ion()
+        # self.fig = plt.figure()
+        # plt.show()
+        # self.plthdl, = plt.plot([],[])
+        # plt.draw()
 
         pubgoal = rospy.Publisher('robot_cmd', GoalID)
         rospy.Subscriber('recognizer/output', String, self.speechCb)
         rospy.Subscriber('objects/target', jarvis_perception.msg.AxisAlignedBox, self.targetObjectCb)
 
         #now, update the weights and publish the result
-        r = rospy.Rate(10.0)
+        r = rospy.Rate(1.0)
         while not rospy.is_shutdown():
             # rospy.loginfo(gripsWithUpdatedWeights)
             print self.lastUtterance
             # print self.axisAlignedBox
             rospy.loginfo(self.msg)
-
-            # try:
-            #     (self.person_trans,self.person_rot) = listener.lookupTransform('/person_tf', '/<box tf>', rospy.Time(0))
-            # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            #     continue
 
             pubgoal.publish(self.msg)
             pubgrips.publish(self.newGrips)
@@ -63,6 +72,7 @@ class UI_client:
     def speechCb(self, msg):
         rospy.loginfo(msg.data)
         self.lastUtterance = msg.data
+        # print "Hello!!!"
 
         # a command keyword is found -- update the goalid
         # 1. come here
@@ -81,8 +91,10 @@ class UI_client:
         # a locative keyword is found -- update the probabilities/weights
         else:
             if self.axisAlignedBox:
-                self.lastUtterance = 'left'
-                self.newGrips = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.person_rot)
+                # self.lastUtterance = 'right'
+                self.person_rot = random.rand() #0.0
+                self.grips.grips.grasps[0].point.x = 0.1*random.rand()
+                self.newGrips = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.person_rot, True)
             else:
                 self.newGrips = self.grips
 
