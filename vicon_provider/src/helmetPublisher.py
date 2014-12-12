@@ -37,10 +37,10 @@ class ViconPublisher:
 
         # Wait for first data to come in
         while self.s.getData() is None: pass
-	rate = rospy.Rate(10.0)
+        rate = rospy.Rate(10.0)
         while not rospy.is_shutdown():
             #pose = self.s.getData()
-	    pose = self.getPose()
+            pose = self.getPose()
 	    print pose
             br.sendTransform((pose[1]/1000,pose[2]/1000,pose[3]/1000),
                     tf.transformations.quaternion_from_euler(0,0,pose[4]),

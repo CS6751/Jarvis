@@ -27,6 +27,11 @@ class UI_client:
         self.person_trans = ''
         self.person_rot = ''
 
+        plotting = True
+
+        self.likelihood = None
+        self.var = None
+
         try:
             grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
             self.grips = grip_server()
@@ -34,36 +39,48 @@ class UI_client:
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
 
-        # listener = tf.TransformListener()
-        # try:
-        #     (self.person_trans,self.person_rot) = listener.lookupTransform('/person_tf', '/<box tf>', rospy.Time(0))
-        # except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-        #     continue
-
-        ## TODO: implement listener for person pose topic
-
-        # rospy.wait_for_service('spawn')
-        # spawner = rospy.ServiceProxy('spawn', turtlesim.srv.Spawn)
-        # spawner(4, 2, 0, 'turtle2')
+        listener = tf.TransformListener()
 
         #Initialize the plot
-        # plt.ion()
-        # self.fig = plt.figure()
-        # plt.show()
-        # self.plthdl, = plt.plot([],[])
-        # plt.draw()
+        plt.ion()
+        fig = plt.figure()
+        plthdl, = plt.plot([],[])
 
         pubgoal = rospy.Publisher('robot_cmd', GoalID)
         rospy.Subscriber('recognizer/output', String, self.speechCb)
         rospy.Subscriber('objects/target', jarvis_perception.msg.AxisAlignedBox, self.targetObjectCb)
 
         #now, update the weights and publish the result
-        r = rospy.Rate(1.0)
+        r = rospy.Rate(10.0)
         while not rospy.is_shutdown():
+
+            try:
+                (boardToPersonTranslationAll,boardToPersonRotationAll) = listener.lookupTransform('/board_tf', '/helmet', rospy.Time(0))
+                self.boardToPersonRotation = boardToPersonRotationAll[2]
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                continue
             # rospy.loginfo(gripsWithUpdatedWeights)
             print self.lastUtterance
             # print self.axisAlignedBox
-            rospy.loginfo(self.msg)
+            #rospy.loginfo(self.msg)
+
+            if plotting and not self.likelihood == None:
+                xspan = self.axisAlignedBox.w
+                yspan = self.axisAlignedBox.l
+                oldGrips = self.grips.grips.grasps
+                plt.clf
+                y, x = mgrid[slice(-0.5*yspan, 0.5*yspan + 0.005, 0.005),
+                        slice(-0.5*xspan, 0.5*xspan + 0.005, 0.005)]
+                posArray = empty(x.shape + (2,))
+                posArray[:,:,0] = x; posArray[:,:,1] = y
+                z = 0
+                for j, name in enumerate(self.likelihood):
+                    z += self.likelihood[name] * self.var[name].pdf(posArray)
+                plt.pcolor(x, y, z, cmap='spectral')
+                for i in range(len(oldGrips)):
+                    plt.plot([0, self.newGrips.grasps[i].point.x], [0, self.newGrips.grasps[i].point.y], linestyle='None', marker='o', markerfacecolor='blue', markersize=12)
+                plt.draw()
+                plt.clf()
 
             pubgoal.publish(self.msg)
             pubgrips.publish(self.newGrips)
@@ -91,40 +108,16 @@ class UI_client:
         # a locative keyword is found -- update the probabilities/weights
         else:
             if self.axisAlignedBox:
-                # self.lastUtterance = 'right'
-                self.person_rot = random.rand() #0.0
+                self.lastUtterance = 'right'
+                self.boardToPersonRotation = random.rand() #0.0
                 self.grips.grips.grasps[0].point.x = 0.1*random.rand()
-                self.newGrips = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.person_rot, True)
+                self.newGrips, self.likelihood, self.var = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.boardToPersonRotation)
             else:
                 self.newGrips = self.grips
 
     def targetObjectCb(self, msg):
-        rospy.loginfo(msg)
+        #rospy.loginfo(msg)
         self.axisAlignedBox = msg
-
-    # def return_grips_client():
-
-    #     try:
-    #         grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
-    #         grips = grip_server()
-    #     except rospy.ServiceException, e:
-    #         print "Service call failed: %s"%e
-
-    #     #now, update the weights and publish the result
-    #     try:
-    #         pub = rospy.Publisher('return_grips', jarvis_perception.msg.GraspArray, queue_size=10)
-    #         r = rospy.Rate(10) # 10hz
-    #         while not rospy.is_shutdown():
-    #             command = 3
-    #             rospy.loginfo(command)
-    #             pub.publish(rospy.get_time(),command)
-
-    #             gripsWithUpdatedWeights = updateWeights.updateWeights(grips)
-    #             rospy.loginfo(gripsWithUpdatedWeights)
-    #             pub.publish(gripsWithUpdatedWeights)
-    #             print "Publishing..."
-    #             r.sleep()
-    #     except rospy.ROSInterruptException: pass 
 
     def usage(self):
         return "requests grip positions/weights from the perception module"
@@ -132,7 +125,7 @@ class UI_client:
     def cleanup(self):
         # stop the robot!
         command = GoalID()
-        rospy.loginfo(command)
+        #rospy.loginfo(command)
         self.pubgoal.publish(command)
 
 if __name__ == "__main__":
