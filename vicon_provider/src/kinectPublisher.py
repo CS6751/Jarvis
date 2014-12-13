@@ -10,8 +10,8 @@ import math
 
 class ViconPublisher:
     def __init__(self, host="10.0.0.102", port=800, \
-        x_VICON_name="Kinect:kinect <t-X>", y_VICON_name="Kinect:kinect <t-Y>", z_VICON_name="Kinect:kinect <t-Z>", \
-        phi_VICON_name="Kinect:kinect <a-X>", theta_VICON_name="Kinect:kinect <a-Y>", psi_VICON_name="Kinect:kinect <a-Z>"):
+        x_VICON_name="Kinect:kinect-coords <t-X>", y_VICON_name="Kinect:kinect-coords <t-Y>", z_VICON_name="Kinect:kinect-coords <t-Z>", \
+        phi_VICON_name="Kinect:kinect-coords <a-X>", theta_VICON_name="Kinect:kinect-coords <a-Y>", psi_VICON_name="Kinect:kinect-coords <a-Z>"):
    # def __init__(self, host="10.0.0.102", port=800, x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>", theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
         
         """
@@ -54,7 +54,7 @@ class ViconPublisher:
             print pose
 	    A = math.sqrt(math.pow(pose[4],2)+math.pow(pose[5],2)+math.pow(pose[6],2))
 
-            print A
+            
 	    W = math.cos(A/2)
        	    if A < 1e-15:
 		xq = 0
@@ -68,7 +68,7 @@ class ViconPublisher:
             br.sendTransform((pose[1],pose[2],pose[3]),
                     q,
                     rospy.Time.now(),  # should we be use vicon time instead?
-                    "kinect",
+                    "kinect_tf",
                     "vicon");
 			
      	    rate.sleep()

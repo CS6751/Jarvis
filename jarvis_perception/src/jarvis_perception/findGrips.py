@@ -5,24 +5,22 @@ import jarvis_perception.msg
 import math
 from tf.transformations import quaternion_from_euler
 
-GRIP_DEPTH = 0.02;
-BOARD_X = 0.002;
-BOARD_Y = 0.1528;
-BOARD_Z = 0.1016;
-CENTER_X = 0.0133;
-CENTER_Y = 0.0658;
-CENTER_Z = -0.0432;
+BOARD_X = 0.0015;
+BOARD_Y = 0.1015;
+BOARD_Z = 0.1395;
+CENTER_X = 0.015;
+CENTER_Y = BOARD_Y/2-0.01;
+CENTER_Z = 0.025-BOARD_Z/2;
 NUM_GRIPS = 4;
-ROLLS =[0,math.pi/2,math.pi/2,0];
+ROLLS =[90,180,180,-90];
 PITCHES=[0,0,0,0];
 YAWS=[0,0,0,0];
 X=[CENTER_X,CENTER_X,CENTER_X,CENTER_X];
-Y=[CENTER_Y,CENTER_Y-BOARD_Y/2+GRIP_DEPTH,
-     CENTER_Y-BOARD_Y/2+GRIP_DEPTH, CENTER_Y];
-Z=[CENTER_Z+BOARD_Z/2-GRIP_DEPTH, CENTER_Z+BOARD_Z/3,
-     CENTER_Z-BOARD_Z/3, CENTER_Z-BOARD_Z/2+GRIP_DEPTH];
+Y=[CENTER_Y-BOARD_Y/2,CENTER_Y-BOARD_Y/6,
+    CENTER_Y+BOARD_Y/6, CENTER_Y+BOARD_Y/2];
+Z=[CENTER_Z, CENTER_Z-BOARD_Z/2,
+    CENTER_Z-BOARD_Z/2, CENTER_Z];
 WEIGHTS = [0.1, 0.5, 0.5, 0.9];
-
 
 def findGrips():
     grips = jarvis_perception.msg.GraspArray()

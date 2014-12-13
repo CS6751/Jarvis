@@ -7,6 +7,7 @@ import geometry_msgs
 from jarvis_perception.srv import *
 import jarvis_perception.msg
 from visualization_msgs.msg import Marker
+from geometry_msgs.msg import PoseArray
 
 def return_grips_client():
     rospy.wait_for_service('return_grips')
@@ -21,35 +22,29 @@ def usage():
     return "Takes no arguments, returns an array of poses"
 
 def talker():
-    pub = rospy.Publisher('grip_viz', Marker, queue_size = 10)
+    pub = rospy.Publisher('grip_viz', PoseArray, queue_size = 10)
     rospy.init_node('grip_viz_publisher', anonymous = True)
     rate = rospy.Rate(1)
     grip_num = 0;
     while not rospy.is_shutdown():
+        poses = geometry_msgs.msg.PoseArray()
         grips = return_grips_client()
-        marker = Marker()
-        marker.header.frame_id = "/board_tf"
-        marker.type = marker.CUBE
-        marker.pose.position = grips.grasps[grip_num].point
-        marker.pose.orientation = grips.grasps[grip_num].orientation
-        marker.color.r = 1.0
-        marker.color.g = 0.5
-        marker.color.b = 0
-        marker.scale.x = 0.01
-        marker.scale.y = 0.01
-        marker.scale.z = 0.1
-
-        marker.color.a = 1.0
-        pub.publish(marker)
+        
+        poses.header.frame_id = "/board_tf"
+        for i in range(0,len(grips.grasps)):
+            pose = geometry_msgs.msg.Pose()
+            pose.position = grips.grasps[i].point
+            pose.orientation = grips.grasps[i].orientation
+            poses.poses.append(pose)
+        pub.publish(poses)
         rate.sleep()
 
 
 if __name__ == "__main__":
     grips = return_grips_client()
     print "Requesting grips"
-    print type(grips)
-    print type(grips.grasps[0])
-    print "grip0 quaternion = " +str(grips.grasps[0].orientation)
+    print "Initial number of grasps"
+    print len(grips.grasps)
     try:
         talker()
     except rospy.ROSInterruptException:

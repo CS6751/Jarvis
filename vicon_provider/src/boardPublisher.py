@@ -40,7 +40,7 @@ class ViconPublisher:
         self.s.selectStreams(["Time", self.x, self.y, self.z, self.phi, self.theta, self.psi])
 
         self.s.startStreams()
-        rate = rospy.Rate(10.0)
+        rate = rospy.Rate(1.0)
         # Wait for first data to come in
         while self.s.getData() is None:
             print "Waiting for data..." 
@@ -70,11 +70,11 @@ class ViconPublisher:
                     rospy.Time.now(),  # should we be use vicon time instead?
                     "board_tf",
                     "vicon");
-	    br.sendTransform((0,0,0),
-		   (0,0,0,1),
-	           rospy.Time.now(),
-		   "vicon",
-		   "world")
+#	    br.sendTransform((0,0,0),
+#		   (0,0,0,1),
+#	           rospy.Time.now(),
+#		   "vicon",
+#		   "world")
 			
      	    rate.sleep()
 # Is any sort of sleep command needed?
