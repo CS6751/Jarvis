@@ -6,11 +6,13 @@ from jarvis_perception import *
 import geometry_msgs
 from jarvis_perception.srv import *
 import jarvis_perception.msg
+from visualization_msgs.msg import Marker
 import updateWeights
 import roslib; roslib.load_manifest('pocketsphinx')
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
 import tf
+from tf.transformations import euler_from_quaternion
 from numpy import *
 import matplotlib.pyplot as plt
 
@@ -48,7 +50,7 @@ class UI_client:
 
         pubgoal = rospy.Publisher('robot_cmd', GoalID)
         rospy.Subscriber('recognizer/output', String, self.speechCb)
-        rospy.Subscriber('objects/target', jarvis_perception.msg.AxisAlignedBox, self.targetObjectCb)
+        rospy.Subscriber('board_vis', Marker, self.targetObjectCb)
 
         #now, update the weights and publish the result
         r = rospy.Rate(10.0)
@@ -56,7 +58,9 @@ class UI_client:
 
             try:
                 (boardToPersonTranslationAll,boardToPersonRotationAll) = listener.lookupTransform('/board_tf', '/helmet', rospy.Time(0))
+                boardToPersonRotationAll = euler_from_quaternion(boardToPersonRotationAll)
                 self.boardToPersonRotation = boardToPersonRotationAll[2]
+                print "Board rotation: ", boardToPersonRotationAll
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
             # rospy.loginfo(gripsWithUpdatedWeights)
@@ -65,12 +69,15 @@ class UI_client:
             #rospy.loginfo(self.msg)
 
             if plotting and not self.likelihood == None:
-                xspan = self.axisAlignedBox.w
-                yspan = self.axisAlignedBox.l
+                xspan = self.axisAlignedBox.scale.y
+                yspan = self.axisAlignedBox.scale.z
+                xcent = self.axisAlignedBox.pose.position.y
+                ycent = self.axisAlignedBox.pose.position.z
+
                 oldGrips = self.grips.grips.grasps
                 plt.clf
-                y, x = mgrid[slice(-0.5*yspan, 0.5*yspan + 0.005, 0.005),
-                        slice(-0.5*xspan, 0.5*xspan + 0.005, 0.005)]
+                y, x = mgrid[slice(ycent-0.5*yspan, ycent+0.5*yspan + 0.005, 0.005),
+                             slice(xcent-0.5*xspan, xcent+0.5*xspan + 0.005, 0.005)]
                 posArray = empty(x.shape + (2,))
                 posArray[:,:,0] = x; posArray[:,:,1] = y
                 z = 0
@@ -78,7 +85,10 @@ class UI_client:
                     z += self.likelihood[name] * self.var[name].pdf(posArray)
                 plt.pcolor(x, y, z, cmap='spectral')
                 for i in range(len(oldGrips)):
-                    plt.plot([0, self.newGrips.grasps[i].point.x], [0, self.newGrips.grasps[i].point.y], linestyle='None', marker='o', markerfacecolor='blue', markersize=12)
+                    xgrip = self.newGrips.grasps[i].point.y
+                    ygrip = self.newGrips.grasps[i].point.z
+                    weight = self.newGrips.grasps[i].weight
+                    plt.plot([xgrip, xgrip], [ygrip, ygrip], linestyle='None', marker='o', markerfacecolor='blue', markersize=36*weight)
                 plt.draw()
                 plt.clf()
 
@@ -108,15 +118,16 @@ class UI_client:
         # a locative keyword is found -- update the probabilities/weights
         else:
             if self.axisAlignedBox:
-                self.lastUtterance = 'right'
-                self.boardToPersonRotation = random.rand() #0.0
-                self.grips.grips.grasps[0].point.x = 0.1*random.rand()
+                # self.lastUtterance = 'right'
+                # self.boardToPersonRotation = random.rand() #0.0
+                # self.grips.grips.grasps[0].point.x = 0.1*random.rand()
+                print "board rotation relative to user: ", self.boardToPersonRotation
                 self.newGrips, self.likelihood, self.var = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.boardToPersonRotation)
             else:
                 self.newGrips = self.grips
 
     def targetObjectCb(self, msg):
-        #rospy.loginfo(msg)
+        # rospy.loginfo(msg)
         self.axisAlignedBox = msg
 
     def usage(self):

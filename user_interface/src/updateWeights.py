@@ -15,8 +15,10 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot):
     # Assume: 
     #   1) the box is thin, with l,w representing the 'largest' components
     #   2) only one box exists at a time
-    xspan = axisAlignedBox.w
-    yspan = axisAlignedBox.l
+    xspan = axisAlignedBox.scale.y
+    yspan = axisAlignedBox.scale.z
+    xcent = axisAlignedBox.pose.position.y
+    ycent = axisAlignedBox.pose.position.z
     position = axisAlignedBox.pose.position # position in camera frame
     orientation = axisAlignedBox.pose.orientation # orientation wrt camera frame (Q: should this come in as a tf?)
     print utterance
@@ -24,18 +26,18 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot):
 
     #TODO: is the origin at the center of the box? 
     var = OrderedDict()
-    var['BoxAnywhere']      = multivariate_normal(mean=[0,0],                   cov=[[10*xspan,0],[0,10*yspan]])
-    var['BoxCenter']        = multivariate_normal(mean=[0,0],                   cov=[[0.5*xspan,0],[0,0.5*yspan]])
+    var['BoxAnywhere']      = multivariate_normal(mean=[xcent,ycent],                       cov=[[10*xspan,0],[0,10*yspan]])
+    var['BoxCenter']        = multivariate_normal(mean=[xcent,ycent],                       cov=[[0.5*xspan,0],[0,0.5*yspan]])
 
-    var['BoxLeft']          = multivariate_normal(mean=[-0.5*xspan,0],          cov=[[0.05*xspan,0],[0,0.3*yspan]])
-    var['BoxRight']         = multivariate_normal(mean=[0.5*xspan,0],           cov=[[0.05*xspan,0],[0,0.3*yspan]])
-    var['BoxBottom']        = multivariate_normal(mean=[0,-0.5*yspan],          cov=[[0.3*xspan,0],[0,0.05*yspan]])
-    var['BoxTop']           = multivariate_normal(mean=[0,0.5*yspan],           cov=[[0.3*xspan,0],[0,0.05*yspan]])
+    var['BoxLeft']          = multivariate_normal(mean=[xcent-0.5*xspan,ycent],             cov=[[0.05*xspan,0],[0,0.3*yspan]])
+    var['BoxRight']         = multivariate_normal(mean=[xcent+0.5*xspan,ycent],             cov=[[0.05*xspan,0],[0,0.3*yspan]])
+    var['BoxBottom']        = multivariate_normal(mean=[xcent,ycent-0.5*yspan],             cov=[[0.3*xspan,0],[0,0.05*yspan]])
+    var['BoxTop']           = multivariate_normal(mean=[xcent,ycent+0.5*yspan],             cov=[[0.3*xspan,0],[0,0.05*yspan]])
 
-    var['BoxBottomLeft']    = multivariate_normal(mean=[-0.5*xspan,-0.5*yspan], cov=[[0.05*xspan,0],[0,0.05*yspan]])
-    var['BoxBottomRight']   = multivariate_normal(mean=[0.5*xspan,-0.5*yspan],  cov=[[0.05*xspan,0],[0,0.05*yspan]])
-    var['BoxTopLeft']       = multivariate_normal(mean=[-0.5*xspan,0.5*yspan],  cov=[[0.05*xspan,0],[0,0.05*yspan]])
-    var['BoxTopRight']      = multivariate_normal(mean=[0.5*xspan,0.5*yspan],   cov=[[0.05*xspan,0],[0,0.05*yspan]])
+    var['BoxBottomLeft']    = multivariate_normal(mean=[xcent-0.5*xspan,ycent-0.5*yspan],   cov=[[0.05*xspan,0],[0,0.05*yspan]])
+    var['BoxBottomRight']   = multivariate_normal(mean=[xcent+0.5*xspan,ycent-0.5*yspan],   cov=[[0.05*xspan,0],[0,0.05*yspan]])
+    var['BoxTopLeft']       = multivariate_normal(mean=[xcent-0.5*xspan,ycent+0.5*yspan],   cov=[[0.05*xspan,0],[0,0.05*yspan]])
+    var['BoxTopRight']      = multivariate_normal(mean=[xcent+0.5*xspan,ycent+0.5*yspan],   cov=[[0.05*xspan,0],[0,0.05*yspan]])
 
 
     oldGrips = grips.grips.grasps
@@ -69,7 +71,7 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot):
     elif utterance.find("top") > -1:
         angleInPersonFrame = 0.5*pi
     else:
-        raise RuntimeWarning('Error: I thought I heard a location keyword, but I did not understand it.')
+        raise RuntimeWarning('I thought I heard a location keyword, but I did not understand it.')
 
     if not angleInPersonFrame == None:
         # Transform from the person frame into the box frame and then compute the likelihoods
@@ -94,8 +96,8 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot):
         # print likelihood['BoxLeft']
         # print likelihood['BoxBottomLeft']
 
-    y, x = mgrid[slice(-0.5*yspan, 0.5*yspan + 0.001, 0.001),
-            slice(-0.5*xspan, 0.5*xspan + 0.001, 0.001)]
+    y, x = mgrid[slice(ycent-0.5*yspan, ycent+0.5*yspan + 0.001, 0.001),
+                 slice(xcent-0.5*xspan, xcent+0.5*xspan + 0.001, 0.001)]
     posArray = empty(x.shape + (2,))
     posArray[:,:,0] = x; posArray[:,:,1] = y
     z = 0
@@ -105,10 +107,12 @@ def updateWeights(grips, utterance, axisAlignedBox, person_rot):
     # print zMax
 
     for i in range(len(oldGrips)):
+        xgrip = oldGrips[i].point.y
+        ygrip = oldGrips[i].point.z
         # pos = oldGrips[i].point[0]
         # print oldGrips[i]
         pos = 2*[[]]
-        pos[0] = float(oldGrips[i].point.x); pos[1] = float(oldGrips[i].point.y)
+        pos[0] = float(xgrip); pos[1] = float(ygrip)
         zSum = 0
         for j, name in enumerate(likelihood):
             # print name
