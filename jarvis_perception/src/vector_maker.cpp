@@ -96,7 +96,7 @@ int main( int argc, char** argv )
 	float dist_to_center = 0.1;
 	center.header.frame_id = "/right_elbow_1";
 	center.header.stamp = ros::Time::now();
-	Eigen::Vector3d center_v = hand + 0.1*hand/hand.norm();
+	Eigen::Vector3d center_v = hand + dist_to_center*hand/hand.norm();
 	center.point.x = center_v[0];
 	center.point.y = center_v[1];
 	center.point.z = center_v[2];
