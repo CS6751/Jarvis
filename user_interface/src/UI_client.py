@@ -19,6 +19,9 @@ import matplotlib.pyplot as plt
 class UI_client:
 
     def __init__(self):
+        """
+        JARVIS User Interface Node
+        """
         rospy.on_shutdown(self.cleanup)
         rospy.wait_for_service('return_grips')
         self.msg = GoalID()
