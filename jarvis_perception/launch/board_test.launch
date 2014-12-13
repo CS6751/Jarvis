@@ -1,8 +1,0 @@
-<launch>
-    <node pkg="tf" type="static_transform_publisher" name="board_tf_broadcaster" args="0 0 0 0 0 0 1 world vicon 100" /> 
-    <node pkg="vicon_provider" name="boardPublisher" type="boardPublisher.py"/>
-    <node pkg="rviz" type="rviz" name="rviz"/>
-    <node pkg="jarvis_perception" type="board_publisher" name="board_publisher"/>
-<node pkg="jarvis_perception" name="grip_server" type="grip_server.py"/>
-
-</launch>
