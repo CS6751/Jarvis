@@ -2,6 +2,9 @@
 #include "geometry_msgs/Pose2D.h"
 #include "jarvis_grasp/goal_pose.h"
 #include "PoseGenerator.h"
+#include "geometry_msgs/PointStamped.h"
+#include "std_msgs/Header.h"
+#include <cmath>
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "PoseGenerator");
@@ -29,7 +32,15 @@ PoseGenerator::PoseGenerator(ros::NodeHandle n) {
   pose_pub =  n.advertise<jarvis_grasp::goal_pose>("goal_pose", 10);
 
   // Set up sub for grasp points
-  sub = n.subscribe("grasp", 10, &PoseGenerator::callback, this);
+  loc_sub = n.subscribe("grasp", 10, &PoseGenerator::loc_callback, this);
+
+  // Set up sub for current configuration
+  config_sub = n.subscribe("joint_states", 10,
+                           &PoseGenerator::config_callback, this);
+
+  // Set up sub for person position
+  marker_sub = n.subscribe("visualization_marker", 10,
+                           &PoseGenerator::marker_callback, this);
 
 }
 
@@ -37,20 +48,59 @@ PoseGenerator::~PoseGenerator() {
   delete ik;
 }
 
-void PoseGenerator::callback(const
-                             jarvis_perception::GraspArray::ConstPtr& grasp_points) {
+void PoseGenerator::marker_callback(visualization_msgs::Marker mark) {
+  cur_pos = mark;
+}
 
+/* This funciton receives the messages published by the youbot
+   containing the joint state (angles, velocity, and "effort") and
+   stores in an instance variable
+*/
+void PoseGenerator::config_callback(sensor_msgs::JointState config) {
+  cur_state = config;
+}
+
+/* This function receives the array of potential grasp points and
+   computes the best configuration to reach the optimal grasp point.
+*/
+void PoseGenerator::loc_callback(const
+                                 jarvis_perception::GraspArray::ConstPtr& grasp_points) {
+
+  // Select first possible grasp point (temporary)
+  jarvis_perception::GraspBox box = grasp_points->grasps[0];
+
+  // Convert grasp point to KDL Frame
+  // Create KDL vector for point. NOTE: point frame should be
+  // transformed with TF first
+  geometry_msgs::PointStamped p_in;
+  p_in.header = grasp_points->header;
+  p_in.point = box.point;
+  geometry_msgs::PointStamped p_out;
+  tf_listener.transformPoint("/arm_base", p_in, p_out);
+
+  // Vector stores possible configurations that solve IK
+  std::vector<KDL::JntArray> q_out;
+
+  if (!ik->CartToJnt(cur_q, p_frame, q_out)) {
+    ROS_INFO("Failed to solve for joint configuration using IK");
+    return;
+  }
+
+  // Choose best configuration.
+  // NOTE: This should be done using highest weight, but just choose
+  // the first option now
+  KDL::JntArray q = q_out[0];
+
+  // NOTE: For now, base movement will be ignored, set all to zero
   geometry_msgs::Pose2D base_pose;
   base_pose.x = 0;
   base_pose.y = 0;
   base_pose.theta = 0;
 
   std::vector<float> angles(5);
-  angles.push_back(0);
-  angles.push_back(0);
-  angles.push_back(0);
-  angles.push_back(0);
-  angles.push_back(0);
+  for (int i = 0; i++; i<5) {
+    angles.push_back(q(i));
+  }
 
   jarvis_grasp::goal_pose msg;
   msg.base_pose = base_pose;
@@ -58,6 +108,8 @@ void PoseGenerator::callback(const
   pose_pub.publish(msg);
 }
 
+/* Extract kinematic data from urdf file for the youbot
+ */
 bool PoseGenerator::extractKinematicData(const urdf::Model & robot_model,
                                          const std::string base_frame,
                                          const std::string tip_frame,
@@ -107,7 +159,8 @@ bool PoseGenerator::extractKinematicData(const urdf::Model & robot_model,
   return true;
 }
 
-
+/* Creates the IK object by loading kinematic data from urdf file.
+ */
 void PoseGenerator::loadIK() {
 
   // Get file path for urdf. Should be done with parameter server

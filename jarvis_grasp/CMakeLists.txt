@@ -9,9 +9,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  visualization_msgs
   message_generation
   youbot_arm_kinematics
   urdf
+  tf
   roslib
 )
 
@@ -63,9 +65,7 @@ add_message_files(
 # Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  std_msgs
   jarvis_perception
-  geometry_msgs
 )
 
 ###################################
@@ -80,7 +80,7 @@ generate_messages(
 catkin_package(
 # INCLUDE_DIRS include
 # LIBRARIES grasp
-  CATKIN_DEPENDS roscpp rospy std_msgs jarvis_perception
+  CATKIN_DEPENDS roscpp rospy std_msgs jarvis_perception geometry_msgs tf visualization_msgs
   DEPENDS system_lib
 )
 
