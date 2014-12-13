@@ -80,7 +80,6 @@ find_package(catkin REQUIRED COMPONENTS
    geometry_msgs
    moveit_msgs
    sensor_msgs
-   jarvis_executive
  )
 
 ###################################
