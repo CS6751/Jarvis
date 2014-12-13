@@ -41,10 +41,6 @@ def talker():
 
         marker.color.a = 1.0
         pub.publish(marker)
-        if grip_num < 3:
-            grip_num += 1
-        else:
-            grip_num = 0
         rate.sleep()
 
 
@@ -52,8 +48,8 @@ if __name__ == "__main__":
     grips = return_grips_client()
     print "Requesting grips"
     print type(grips)
-    print type(grips.grasps[3])
-    print "grip2 quaternion = " +str(grips.grasps[1].orientation)
+    print type(grips.grasps[0])
+    print "grip0 quaternion = " +str(grips.grasps[0].orientation)
     try:
         talker()
     except rospy.ROSInterruptException:
