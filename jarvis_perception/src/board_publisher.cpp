@@ -7,21 +7,21 @@
 #include <jarvis_perception/GraspBox.h>
 #include <jarvis_perception/GraspArray.h>
 
-float BOARD_X = 0.002;
-float BOARD_Y = 0.1528;
-float BOARD_Z = 0.1016;
-float CENTER_X = 0.0133;
-float CENTER_Y = 0.0658;
-float CENTER_Z = -0.0432;
+float BOARD_X = 0.0015;
+float BOARD_Y = 0.1015;
+float BOARD_Z = 0.1395;
+float CENTER_X = 0.015;
+float CENTER_Y = BOARD_Y/2-0.01;
+float CENTER_Z = 0.025-BOARD_Z/2;
 int NUM_GRIPS = 4;
-double ROLLS[4] ={0,90,90,0};
+double ROLLS[4] ={90,180,180,-90};
 double PITCHES[4]={0,0,0,0};
 double YAWS[4]={0,0,0,0};
 float X[4]={CENTER_X,CENTER_X,CENTER_X,CENTER_X};
-float Y[4]={CENTER_Y,CENTER_Y-BOARD_Y/2,
-		      CENTER_Y-BOARD_Y/2, CENTER_Y};
-float Z[4]={CENTER_Z+BOARD_Z/2, CENTER_Z+BOARD_Z/3,
-			CENTER_Z-BOARD_Z/3, CENTER_Z+BOARD_Z/3};
+float Y[4]={CENTER_Y-BOARD_Y/2,CENTER_Y-BOARD_Y/6,
+		      CENTER_Y+BOARD_Y/6, CENTER_Y+BOARD_Y/2};
+float Z[4]={CENTER_Z, CENTER_Z-BOARD_Z/2,
+			CENTER_Z-BOARD_Z/2, CENTER_Z};
 float WEIGHTS[4] = {0.1, 0.5, 0.5, 0.9};
 
 
@@ -32,7 +32,7 @@ class BoardGenerator
     public:
 	BoardGenerator():r_(1)
 	{
-	    pub_ = n_.advertise<visualization_msgs::Marker>("board_vis",1);
+	    pub_ = n_.advertise<visualization_msgs::Marker>("board",1);
 	    for (int i = 0; i < 4; ++i)
 	    {
 		tf::Quaternion q;

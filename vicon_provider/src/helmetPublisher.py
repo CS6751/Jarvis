@@ -6,10 +6,13 @@ import tf
 import sys, time
 from numpy import *
 import _pyvicon
+import math
 
 class ViconPublisher:
-    #def __init__(self, host="10.0.0.102", port=800, x_VICON_name="KUKAyouBot2:main body <t-X>", y_VICON_name="KUKAyouBot2:main body <t-Y>", theta_VICON_name="KUKAyouBot2:main body <a-Z>"):
-    def __init__(self, host="10.0.0.102", port=800, x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>",z_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Z>" , theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
+    def __init__(self, host="10.0.0.102", port=800, \
+        x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>", z_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Z>", \
+        phi_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-X>", theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Y>", psi_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
+        
         """
         Pose handler for VICON system
         host (string): The ip address of VICON system (default="10.0.0.102")
@@ -26,48 +29,62 @@ class ViconPublisher:
         self.x = x_VICON_name
         self.y = y_VICON_name
         self.z = z_VICON_name
+        self.phi = phi_VICON_name
         self.theta = theta_VICON_name
+        self.psi = psi_VICON_name
 
         self.s = _pyvicon.ViconStreamer()
         self.s.connect(self.host,self.port)
 
-        self.s.selectStreams(["Time", self.x, self.y, self.z, self.theta])
+        self.s.selectStreams(["Time", self.x, self.y, self.z, self.phi, self.theta, self.psi])
 
         self.s.startStreams()
-
+        rate = rospy.Rate(10.0)
         # Wait for first data to come in
-        while self.s.getData() is None: pass
-	rate = rospy.Rate(10.0)
-        while not rospy.is_shutdown():
-            #pose = self.s.getData()
-	    pose = self.getPose()
-	    print pose
-            br.sendTransform((pose[1]/1000,pose[2]/1000,pose[3]/1000),
-                    tf.transformations.quaternion_from_euler(0,0,pose[4]),
-                    rospy.Time.now(),
-                    "helmet",
-                    "vicon")
-	    rate.sleep()
+        while self.s.getData() is None:
+            print "Waiting for data..." 
+            pass
 
+        print "Stream acquired"
+        while not rospy.is_shutdown():    
+#            print self.s.getData()
+            pose = self.getPose()
+            print "pose: "
+            print pose
+	    A = math.sqrt(math.pow(pose[4],2)+math.pow(pose[5],2)+math.pow(pose[6],2))
+
+            print A
+	    W = math.cos(A/2)
+       	    if A < 1e-15:
+		xq = 0
+		yq = 0
+		zq = 0
+	    else:
+		xq = pose[4]/A*math.sin(A/2)
+		yq = pose[5]/A*math.sin(A/2)
+		zq = pose[6]/A*math.sin(A/2)
+	    q = [xq,yq,zq,W]
+            br.sendTransform((pose[1],pose[2],pose[3]),
+                    q,
+                    rospy.Time.now(),  # should we be use vicon time instead?
+                    "helmet",
+                    "vicon");
+     	    rate.sleep()
+# Is any sort of sleep command needed?
     def _stop(self):
-        print "Vicon pose handler quitting..."
+        print "board pose handler quitting..."
         self.s.stopStreams()
         print "Terminated."
 
     def getPose(self, cached=False):
 
-        pose = self.s.getData()
-	(t, x, y, z, o) = self.s.getData()
-        (t, x, y, z, o) = [t/100, x/1000, y/1000, z/1000, o]
-#	pose[0] = pose[0]/100
-#	pose[1] = pose[1]/1000
-#	pose[2] = pose[2]/1000
-#	pose[3] = pose[3]/1000
+        (t, x, y, z, phi, theta, psi) = self.s.getData()
+        (t, x, y, z, phi, theta, psi) = [t/100, x/1000, y/1000, z/1000, phi, theta, psi]
 
-        return pose
+        return array([t, x, y, z, phi, theta, psi])
 
 if __name__ == "__main__":
-    rospy.init_node('helmetPublisher')
+    rospy.init_node('boardPublisher')
     try:
         ViconPublisher()
     except:

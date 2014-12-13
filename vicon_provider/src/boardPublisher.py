@@ -10,8 +10,8 @@ import math
 
 class ViconPublisher:
     def __init__(self, host="10.0.0.102", port=800, \
-        x_VICON_name="Kinect:kinect <t-X>", y_VICON_name="Kinect:kinect <t-Y>", z_VICON_name="Kinect:kinect <t-Z>", \
-        phi_VICON_name="Kinect:kinect <a-X>", theta_VICON_name="Kinect:kinect <a-Y>", psi_VICON_name="Kinect:kinect <a-Z>"):
+        x_VICON_name="Board:boardFront <t-X>", y_VICON_name="Board:boardFront <t-Y>", z_VICON_name="Board:boardFront <t-Z>", \
+        phi_VICON_name="Board:boardFront <a-X>", theta_VICON_name="Board:boardFront <a-Y>", psi_VICON_name="Board:boardFront <a-Z>"):
    # def __init__(self, host="10.0.0.102", port=800, x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>", theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
         
         """
@@ -68,8 +68,13 @@ class ViconPublisher:
             br.sendTransform((pose[1],pose[2],pose[3]),
                     q,
                     rospy.Time.now(),  # should we be use vicon time instead?
-                    "kinect",
+                    "board_tf",
                     "vicon");
+	    br.sendTransform((0,0,0),
+		   (0,0,0,1),
+	           rospy.Time.now(),
+		   "vicon",
+		   "world")
 			
      	    rate.sleep()
 # Is any sort of sleep command needed?
