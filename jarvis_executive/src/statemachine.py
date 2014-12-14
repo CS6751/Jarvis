@@ -171,11 +171,8 @@ class Armmove(smach.State):
             elif self.transition == 2:
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForArmmove)
                 pubPlan.publish(PlanCommand(plancommand = False))
-                rospy.Subscriber('ControlStatus_trial', String, self.controlforArmmove)
+                #rospy.Subscriber('ControlStatus_trial', String, self.controlforArmmove)   # resumes when control works
                 pubCon.publish(Mode(mode = 2))
-                ### the following line must be removed when control subscriber is ready
-                #rospy.Subscriber('robot_cmd_trial', GoalID, self.done)
-                ### the above line must be removed when control subscriber is ready
                 
             elif self.transition == 3: 
                 self.transition = -1
@@ -218,8 +215,6 @@ class Armmove(smach.State):
         if userdata.PlanStatus and self.transition == 0:
             print 'Armmove plan is ready!"'
             self.transition = 2
-        
-        
         
     def controlforArmmove(self, userdata):
         """callback for jarvis_controls"""
