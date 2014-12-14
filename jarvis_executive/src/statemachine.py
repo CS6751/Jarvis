@@ -174,7 +174,7 @@ class Armmove(smach.State):
                 rospy.Subscriber('ControlStatus_trial', String, self.controlforArmmove)
                 pubCon.publish(Mode(mode = 2))
                 ### the following line must be removed when control subscriber is ready
-                rospy.Subscriber('robot_cmd_trial', GoalID, self.done)
+                #rospy.Subscriber('robot_cmd_trial', GoalID, self.done)
                 ### the above line must be removed when control subscriber is ready
                 
             elif self.transition == 3: 
@@ -200,6 +200,13 @@ class Armmove(smach.State):
         if userdata.id == 'stop' and (self.transition == 0 or self.transition == 2):
             print 'Heard "Stop!"'
             self.transition = 1
+    ### the following 3 line must be removed when control subscriber is ready
+        elif userdata.id == 'done' and (self.transition == 2):
+            print 'arm successfully moved!'
+            self.transition = 4            
+    ### the above 3 line must be removed when control subscriber is ready
+
+            
             
     def planForArmmove(self, userdata):
         """callback for jarvis_planner"""
@@ -219,11 +226,11 @@ class Armmove(smach.State):
             self.transition = 4
       
     ### the following 5 line must be removed when control subscriber is ready
-    def done(self, userdata):
-        """callback for user_interface"""
-        if userdata.id == 'done' and (self.transition == 2):
-            print 'arm successfully moved!'
-            self.transition = 4            
+    #def done(self, userdata):
+    #    """callback for user_interface"""
+    #    if userdata.id == 'done' and (self.transition == 2):
+    #        print 'arm successfully moved!'
+    #        self.transition = 4            
     ### the above 5 line must be removed when control subscriber is ready
         
 '''
