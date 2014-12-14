@@ -16,6 +16,7 @@ from std_msgs.msg import String
 class voice_cmd_vel:
 
     def __init__(self):
+        print 'start voice_cmd_vel!'
         rospy.on_shutdown(self.cleanup)
         self.speed = 0.2
         self.msg = Twist()
@@ -43,25 +44,30 @@ class voice_cmd_vel:
                 self.msg.angular.z = self.msg.angular.z/2
                 self.speed = 0.2
 
-        if msg.data.find("forward") > -1:    
+        if msg.data.find("forward") > -1:
+            print 'heard forward'    
             self.msg.linear.x = self.speed
             self.msg.angular.z = 0
         elif msg.data.find("left") > -1:
+            print 'heard left'
             if self.msg.linear.x != 0:
                 if self.msg.angular.z < self.speed:
                     self.msg.angular.z += 0.05
             else:        
                 self.msg.angular.z = self.speed*2
-        elif msg.data.find("right") > -1:    
+        elif msg.data.find("right") > -1:
+            print 'heard right'    
             if self.msg.linear.x != 0:
                 if self.msg.angular.z > -self.speed:
                     self.msg.angular.z -= 0.05
             else:        
                 self.msg.angular.z = -self.speed*2
         elif msg.data.find("back") > -1:
+            print 'heard back'
             self.msg.linear.x = -self.speed
             self.msg.angular.z = 0
         elif msg.data.find("stop") > -1 or msg.data.find("halt") > -1:          
+            print 'heard stop'
             self.msg = Twist()
         
         self.pub_.publish(self.msg)
