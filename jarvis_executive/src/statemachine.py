@@ -160,7 +160,14 @@ class Armmove(smach.State):
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForArmmove)
                 pubPlan.publish(PlanCommand(plancommand = True))
                 rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForArmmove)
-               
+            
+            elif self.transition == 4:
+                self.transition = -1
+                pubPlan.publish(PlanCommand(plancommand = False))
+                pubCon.publish(Mode(mode = 4))
+                self.counter += 1
+                return 'armmove_done'
+                
             elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
@@ -181,12 +188,7 @@ class Armmove(smach.State):
                 self.counter += 1
                 return 'armmove_failed'
                
-            elif self.transition == 4:
-                self.transition = -1
-                pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 4))
-                self.counter += 1
-                return 'armmove_done'
+            
             
             self.timedelay += 1   
             print self.counter, 'ARMMOVE ( time:',self.timedelay,')' 
