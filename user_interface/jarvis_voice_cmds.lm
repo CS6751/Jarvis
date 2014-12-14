@@ -6,7 +6,7 @@ This model based on a corpus of 14 sentences and 13 words
 The (fixed) discount mass is 0.5
 
 \data\
-ngram 1=20
+ngram 1=21
 ngram 2=39
 ngram 3=2
 
@@ -16,6 +16,7 @@ ngram 3=2
 -1.6902 BACK -0.2341
 -1.6902 BACKWARD -0.2341
 -1.9912 BOTTOM -0.2341
+-1.9912 CENTER -0.2341
 -1.9912 COME -0.2341
 -1.6902 FAR -0.2341
 -1.6902 FORWARD -0.2341

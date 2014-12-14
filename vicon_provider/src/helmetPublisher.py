@@ -84,7 +84,7 @@ class ViconPublisher:
         return array([t, x, y, z, phi, theta, psi])
 
 if __name__ == "__main__":
-    rospy.init_node('boardPublisher')
+    rospy.init_node('helmetPublisher')
     try:
         ViconPublisher()
     except:

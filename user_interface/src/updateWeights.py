@@ -15,9 +15,9 @@ def updateWeights(grips, utterance, axisAlignedBox, boardRotation):
     # Assume: 
     #   1) the box is thin, with l,w representing the 'largest' components
     #   2) only one box exists at a time
-    xspan = axisAlignedBox.scale.y
-    yspan = axisAlignedBox.scale.z
-    xcent = axisAlignedBox.pose.position.y
+    xspan = axisAlignedBox.scale.z  #TODO: reversed???
+    yspan = axisAlignedBox.scale.y
+    xcent = -axisAlignedBox.pose.position.y
     ycent = axisAlignedBox.pose.position.z
     position = axisAlignedBox.pose.position # position in camera frame
     orientation = axisAlignedBox.pose.orientation # orientation wrt camera frame (Q: should this come in as a tf?)
@@ -92,10 +92,12 @@ def updateWeights(grips, utterance, axisAlignedBox, boardRotation):
             boardRotationRoll = 0
 
         c = cos(angleInPersonFrame+boardRotationRoll)
-        s = sin(angleInPersonFrame+boardRotationRoll)
+        s = -sin(angleInPersonFrame+boardRotationRoll)
         if (boardRotationYaw > 0.5*pi and boardRotationYaw < 0.75*pi) or (boardRotationYaw < -0.5*pi and boardRotationYaw > -0.75*pi):
             c = -c
-            
+        if (boardRotationPitch > 0.5*pi and boardRotationPitch < 0.75*pi) or (boardRotationPitch < -0.5*pi and boardRotationPitch > -0.75*pi):
+            s = -s
+
         likelihood['BoxTop']        = max(s, 0)**2
         likelihood['BoxBottom']     = max(-s, 0)**2
         likelihood['BoxLeft']       = max(-c, 0)**2
@@ -105,9 +107,14 @@ def updateWeights(grips, utterance, axisAlignedBox, boardRotation):
         likelihood['BoxBottomRight']= max(c, 0)**2 + max(-s, 0)**2
         likelihood['BoxBottomLeft'] = max(-c, 0)**2 + max(-s, 0)**2
 
-        # print likelihood['BoxTopLeft']
-        # print likelihood['BoxLeft']
-        # print likelihood['BoxBottomLeft']
+        print "BoxTop", likelihood['BoxTop']
+        print "BoxTopLeft", likelihood['BoxTopLeft']
+        print "BoxLeft", likelihood['BoxLeft']
+        print "BoxBottomLeft", likelihood['BoxBottomLeft']
+        print "BoxBottom", likelihood['BoxBottom']
+        print "BoxBottomRight", likelihood['BoxBottomRight']
+        print "BoxRight", likelihood['BoxRight']
+        print "BoxTopRight", likelihood['BoxTopRight']
 
     if likelihood:
         y, x = mgrid[slice(ycent-0.5*yspan, ycent+0.5*yspan + 0.001, 0.001),
@@ -121,8 +128,8 @@ def updateWeights(grips, utterance, axisAlignedBox, boardRotation):
         # print zMax
 
         for i in range(len(oldGrips)):
-            xgrip = oldGrips[i].point.y
-            ygrip = oldGrips[i].point.z
+            xgrip = oldGrips[i].point.z
+            ygrip = -oldGrips[i].point.y
             # print oldGrips[i]
             pos = 2*[[]]
             pos[0] = float(xgrip); pos[1] = float(ygrip)
