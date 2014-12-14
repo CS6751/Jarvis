@@ -140,6 +140,7 @@ class Armmove(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['armmove_stop','armmove_failed','armmove_done'])
         self.counter = 1
+        self.timedelay = 0
         self.plantransition = False  # True iff plan is ready for transition 
         self.transition = 0
 
