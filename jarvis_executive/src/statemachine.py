@@ -196,7 +196,7 @@ class Armmove(smach.State):
     def userForArmmove(self, userdata):
         """callback for user_interface"""
     ### the following 3 line must be removed when control subscriber is ready
-        if userdata.id == 'done'
+        if userdata.id == 'done':
             print 'arm successfully moved!'
             self.transition = 4            
 
