@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   visualization_msgs
   message_generation
-  youbot_arm_kinematics
   urdf
   tf
   roslib
