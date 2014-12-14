@@ -24,7 +24,7 @@ class jarvis_planner_pub(object):
                 self.num = 0
              
             if self.transition == 1:
-                print 'base plan ready'
+                print 'Plan Ready!'
                 self.pub.publish(True)
                 self.transition = -1
                 
@@ -35,7 +35,7 @@ class jarvis_planner_pub(object):
             #print 'begin planning for basemove'
             self.num += 1
             #print self.num
-            if self.num >= 1000:
+            if self.num >= 2000:
                 self.transition = 1
                 
     def cleanup(self):
