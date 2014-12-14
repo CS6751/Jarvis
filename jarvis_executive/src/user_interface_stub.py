@@ -7,11 +7,13 @@ from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
 from jarvis_executive.msg import *
 
-def user_interface_pub():
-    pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
-    rospy.init_node('user_interface_stub', anonymous=True)
-    r = rospy.Rate(10) # 10hz
-    num = 0
+class  user_interface_pub():
+    
+    def __init__(self):
+        pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
+        rospy.init_node('user_interface_stub', anonymous=True)
+        r = rospy.Rate(10) # 10hz
+        num = 0
     while not rospy.is_shutdown():
         data = GoalID(id = str(num))
         #time_stamp = str(rospy.get_time())
