@@ -204,7 +204,7 @@ class Armmove(smach.State):
             if self.transition == 3:
                 print 'Failure!'
                 
-            if self.transition == 0:
+            if self.transition == 4:
                 print 'Arm Moved!'
             
             r.sleep()
