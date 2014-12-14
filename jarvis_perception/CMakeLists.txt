@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(jarvis_controls)
+project(jarvis_perception)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -9,14 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
-  message_generation
   geometry_msgs
-
-  moveit_msgs
-
-  sensor_msgs
-
-
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -26,7 +20,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-#catkin_python_setup()
+ catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
@@ -55,16 +49,16 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   Kill.msg
-   Mode.msg #These need to be commented out once I get these from Elijah
+   AxisAlignedBox.msg
+   GraspBox.msg
+   GraspArray.msg
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+ add_service_files(
+   FILES
+   ReturnGrips.srv
+ )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -78,9 +72,6 @@ find_package(catkin REQUIRED COMPONENTS
    DEPENDENCIES
    std_msgs
    geometry_msgs
-   moveit_msgs
-   sensor_msgs
-   jarvis_executive
  )
 
 ###################################
@@ -94,12 +85,14 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-  LIBRARIES jarvis_controls
-
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tf geometry_msgs moveit_msgs sensor_msgs moveit_msgs
-
-
-
+  LIBRARIES jarvis_perception
+  CATKIN_DEPENDS 
+  roscpp 
+  rospy 
+  std_msgs 
+  message_runtime
+  tf
+  geometry_msgs
   DEPENDS system_lib
 )
 
@@ -115,19 +108,19 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(jarvis_controls
-#   src/${PROJECT_NAME}/jarvis_controls.cpp
+# add_library(jarvis_perception
+#   src/${PROJECT_NAME}/jarvis_perception.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(jarvis_controls_node src/jarvis_controls_node.cpp)
+# add_executable(jarvis_perception_node src/jarvis_perception_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(jarvis_controls_node jarvis_controls_generate_messages_cpp)
+# add_dependencies(jarvis_perception_node jarvis_perception_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(jarvis_controls_node
+# target_link_libraries(jarvis_perception_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -146,7 +139,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS jarvis_controls jarvis_controls_node
+# install(TARGETS jarvis_perception jarvis_perception_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -171,7 +164,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_jarvis_controls.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_jarvis_perception.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

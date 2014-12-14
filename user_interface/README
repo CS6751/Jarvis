@@ -1,0 +1,4 @@
+Required dependency: 
+
+1. pocketsphinx ROS wrapper:
+sudo apt-get install ros-hydro-pocketsphinx
