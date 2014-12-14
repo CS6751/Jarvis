@@ -7,29 +7,43 @@ from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
 from jarvis_executive.msg import *
 
-class  user_interface_pub():
+class  user_interface_pub(object):
     
     def __init__(self):
-        pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
-        rospy.init_node('user_interface_stub', anonymous=True)
+        print 'Start user_interface!'
+        self.pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
         r = rospy.Rate(10) # 10hz
-        num = 0
-    while not rospy.is_shutdown():
-        data = GoalID(id = str(num))
-        #time_stamp = str(rospy.get_time())
-        #num = 3
-        #string_id = id(num)
-        #data = GoalID(time_stamp,string_id) 
-        #rospy.loginfo(time_stamp+' command is < %s >',string_id)
-        #pub.publish(time_stamp, string_id)
-        #pub.publish('0', string_id)
-        rospy.loginfo(data)
-        pub.publish(data)
+        #num = 0
         
+        self.msg = GoalID()
+        rospy.Subscriber('recognizer/output', String, self.speechCb)
+        
+        while not rospy.is_shutdown():
+            #data = GoalID(id = str(num))
+            #rospy.loginfo(self.msg)
+            #pub.publish(self.msg)
+            self.pub.publish(self.msg)
+            r.sleep()
+        
+    def speechCb(self, userdata):
+        rospy.loginfo(userdata.data)
+        
+        if userdata.data.find('forward') > -1:
+            print 'heard forward'
+            self.msg.id = 'come_here'
+        
+        elif userdata.data.find('back') > -1:
+            self.msg.id = 'grab'
+    
+        elif userdata.data.find('stop') > -1:
+            self.msg.id = 'stop'    
+    
+        '''
         if num == 20:
             toBasemove = GoalID(id = 'come_here')
             pub.publish(toBasemove)
-            print 'move to base move transition!!!!!!!'
+            print 'move to base move transition!!!!!!!'    
+        
         #if num == 21:
         #    m = GoalID(id = None)
         #    pub.publish(m)
@@ -71,6 +85,7 @@ class  user_interface_pub():
         
         num = num+1
         r.sleep()
+        '''
 '''
 
 def user_interface_pub():
@@ -88,6 +103,7 @@ def user_interface_pub():
         r.sleep()
 '''
 if __name__ == '__main__':
+    rospy.init_node('user_interface_stub', anonymous=True)
     try:
         user_interface_pub()
     except rospy.ROSInterruptException: pass
