@@ -28,16 +28,19 @@ class  user_interface_pub(object):
     def speechCb(self, userdata):
         rospy.loginfo(userdata.data)
         
-        if userdata.data.find('come_here') > -1:
+        if userdata.data.find('come here') > -1:
             print 'heard come here!'
+            self.msg = GoalID()           #by putting it here it prevents the stored ids transimitted to statemachine
             self.msg.id = 'come_here'
         
         elif userdata.data.find('grab') > -1:
             print 'heard grab!'
+            self.msg = GoalID()
             self.msg.id = 'grab'
     
         elif userdata.data.find('stop') > -1:
             print 'heard stop!'
+            self.msg = GoalID()
             self.msg.id = 'stop'    
     
         '''
