@@ -181,7 +181,7 @@ class Armmove(smach.State):
                 self.counter += 1
                 return 'armmove_failed'
             
-             elif self.transition == 4:
+            elif self.transition == 4:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
                 pubCon.publish(Mode(mode = 4))
