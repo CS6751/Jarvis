@@ -284,7 +284,7 @@ class Hold(smach.State):
             print 'Heard "Adjust!"'
             self.transition = 3
         
-        if userdata.id == 'good job' and self.transition == 0:
+        if userdata.id == 'good_job' and self.transition == 0:
             print 'Heard "Good job!"'
             self.transition = 4
 
