@@ -9,7 +9,8 @@ from jarvis_executive.msg import *
 class jarvis_planner_pub(object):
     
     def __init__(self):
-        pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
+        rospy.on_shutdown(self.cleanup)
+        self.pub = rospy.Publisher('PlanStatus_trial', PlanStatus, queue_size=10)
         r = rospy.Rate(10) # 10hz
         self.transition = 0
         self.num = 0
@@ -24,7 +25,7 @@ class jarvis_planner_pub(object):
              
             if self.transition == 1:
                 print 'base plan ready'
-                pub.publish(True)
+                self.pub.publish(True)
                 self.transition = -1
                 
             r.sleep()
@@ -36,6 +37,10 @@ class jarvis_planner_pub(object):
             #print self.num
             if self.num >= 1000:
                 self.transition = 1
+                
+    def cleanup(self):
+        print 'plan quitting...'
+        self.pub.publish(False)
                 
        
 if __name__ == '__main__':
