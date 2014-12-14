@@ -28,14 +28,16 @@ class  user_interface_pub(object):
     def speechCb(self, userdata):
         rospy.loginfo(userdata.data)
         
-        if userdata.data.find('forward') > -1:
-            print 'heard forward'
+        if userdata.data.find('come_here') > -1:
+            print 'heard come here!'
             self.msg.id = 'come_here'
         
-        elif userdata.data.find('back') > -1:
+        elif userdata.data.find('grab') > -1:
+            print 'heard grab!'
             self.msg.id = 'grab'
     
         elif userdata.data.find('stop') > -1:
+            print 'heard stop!'
             self.msg.id = 'stop'    
     
         '''
