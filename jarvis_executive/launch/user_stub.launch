@@ -1,8 +1,8 @@
 <launch>
 
     <node pkg="pocketsphinx" name="recognizer" type="recognizer.py">
-      <param name="lm" value="$(find jarvis_executive)/voice/jarvis_voice_cmds.lm"/>
-      <param name="dict" value="$(find jarvis_executive)/voice/jarvis_voice_cmds.dic"/>
+      <param name="lm" value="$(find jarvis_executive)/voice/jarvis_command.lm"/>
+      <param name="dict" value="$(find jarvis_executive)/voice/jarvis_command.dic"/>
     </node>
     
     <node pkg="jarvis_executive" name="user_interface_stub" type="user_interface_stub.py" output="screen"/>
