@@ -1,0 +1,10 @@
+<launch>
+
+    <node pkg="pocketsphinx" name="recognizer" type="recognizer.py">
+      <param name="lm" value="$(find pocketsphinx)/demo/voice_cmd.lm"/>
+      <param name="dict" value="$(find pocketsphinx)/demo/voice_cmd.dic"/>
+    </node>
+    
+    <node pkg="pocketsphinx" name="user_interface_stub" type="user_interface_stub.py" output="screen"/>
+
+</launch>
