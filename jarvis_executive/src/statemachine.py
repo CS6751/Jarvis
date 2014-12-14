@@ -211,7 +211,6 @@ class Armmove(smach.State):
             
     def planForArmmove(self, userdata):
         """callback for jarvis_planner"""
-        print 'callback for basemove plan'#
         if (self.counter == 3) and (self.transition == 0):  # armmove performing 3 times is considered failure
             print 'ARMMOVE State reached maximum number of time... Plan Failed!'
             self.transition = 3
