@@ -6,6 +6,7 @@ import rospy
 import numpy as np
 import cybrain as cb
 from std_msgs.msg import String
+from std_msgs.msg import Float64
 #import matplotlib.pyplot as plt
 
 buf = []
@@ -24,6 +25,7 @@ yp1 = []
 yp2 = []
 yp3 = []
 nnet = ''
+data = [0,0,0]
 
 def prediction():
 
@@ -33,11 +35,13 @@ def prediction():
 
     rospy.init_node('temp')
     print 'starting subscriber'
-    sub = rospy.Subscriber('joint_states',JointState,callback)
+    sub = rospy.Subscriber('joint_states2',Float64,callback)
+    sub = rospy.Subscriber('joint_states3',Float64,callback1)
+    sub = rospy.Subscriber('joint_states4',Float64,callback2)
 
     print 'publishing' 
-    pub = rospy.Publisher('intents', String, queue_size=10)
-    # pub = rospy.Publisher('intents', String)
+    # pub = rospy.Publisher('intents', String, queue_size=10)
+    pub = rospy.Publisher('intents', String)
     r = rospy.Rate(10) # 10hz
     while not rospy.is_shutdown():
         inte = str(predict)
@@ -46,33 +50,42 @@ def prediction():
 
     rospy.spin()
 
+def callback1(msg):
+    global data
+    data[0] = msg
+
+def callback2(msg):
+    global data
+    data[1] = msg
+
 def callback(msg):
-    global buf, prev, curr, spark, predict, classified
-    if msg.name[0]=='arm_joint_1':
-        data = msg.position
-        curr = data[1:4]
-        dif = diff(curr,prev)
-        # print 'classified: ',classified, 'diff: ', dif
-        if max(dif) < threshold and classified==1:
-            print 'low'
-            classified = 0
-            predict = 0
-        if spark==0:
-            if max(dif) > threshold:
-                buf.append(prev)
-                buf.append(curr)
-                spark = 1
-                predict = 0
-        else:
+    global buf, prev, curr, spark, predict, classified, data
+    # if msg.name[0]=='arm_joint_1':
+    # data = msg.position
+    data[2] = msg
+    curr = data
+    dif = diff(curr,prev)
+    # print 'classified: ',classified, 'diff: ', dif
+    if max(dif) < threshold and classified==1:
+        print 'low'
+        classified = 0
+        predict = 0
+    if spark==0:
+        if max(dif) > threshold:
+            buf.append(prev)
             buf.append(curr)
-            if len(buf) == buflength:
-                if classified == 0:
-                    classify(buf)
-                    classified = 1
-                buf = []
-                spark = 0
-            total = totalrow(buf)
-        prev = curr
+            spark = 1
+            predict = 0
+    else:
+        buf.append(curr)
+        if len(buf) == buflength:
+            if classified == 0:
+                classify(buf)
+                classified = 1
+            buf = []
+            spark = 0
+        total = totalrow(buf)
+    prev = curr
 
 def diff(v1, v2):
     if not v1 or not v2:
@@ -94,7 +107,31 @@ def totalrow(mat):
 def classify(buf):
     global predict, nnet
 
-    print 'doing classification'
+    print 'doing classificosition'
+    data[2] = msg
+    curr = data
+    dif = diff(curr,prev)
+    # print 'classified: ',classified, 'diff: ', dif
+    if max(dif) < threshold and classified==1:
+        print 'low'
+        classified = 0
+        predict = 0
+    if spark==0:
+        if max(dif) > threshold:
+            buf.append(prev)
+            buf.append(curr)
+            spark = 1
+            predict = 0
+    else:
+        buf.append(curr)
+        if len(buf) == buflength:
+            if classified == 0:
+                classify(buf)
+                classified = 1
+            buf = []
+            spark = 0
+        total = totalrow(buf)
+    prev = curration
     testX = np.array(extractfeatures(buf))
   
     result = nnet.activateWith(testX, return_value= True)
