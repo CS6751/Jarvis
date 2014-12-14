@@ -39,7 +39,24 @@ class  user_interface_pub(object):
     
         elif userdata.data.find('stop') > -1:
             print 'heard stop!'
-            self.msg.id = 'stop'    
+            self.msg.id = 'stop' 
+            
+        elif userdata.data.find('done') > -1:
+            print 'heard done!'
+            self.msg.id = 'done' 
+            
+        elif userdata.data.find('good job') > -1:
+            print 'heard good job!'
+            self.msg.id = 'good job' 
+            
+        elif userdata.data.find('adjust') > -1:
+            print 'heard adjust!'
+            self.msg.id = 'adjust'
+            
+        elif userdata.data.find('hold') > -1:
+            print 'heard hold!'
+            self.msg.id = 'hold' 
+            
     
     def cleanup(self):
         print 'user interface exiting...'
