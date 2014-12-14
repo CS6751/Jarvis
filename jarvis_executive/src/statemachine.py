@@ -195,16 +195,15 @@ class Armmove(smach.State):
 
     def userForArmmove(self, userdata):
         """callback for user_interface"""
-    ### the following 3 line must be removed when control subscriber is ready
-        if userdata.id == 'done' and (self.transition == 0 or self.transition == 2):
-            print 'arm successfully moved!'
-            self.transition = 4 
-    ### the above 3 line must be removed when control subscriber is ready
-
         if userdata.id == 'stop' and (self.transition == 0 or self.transition == 2):
             print 'Heard "Stop!"'
             self.transition = 1
-            
+
+    ### the following 3 line must be removed when control subscriber is ready
+        if userdata.id == 'done' and (self.transition == 2):
+            print 'arm successfully moved!'
+            self.transition = 4 
+    ### the above 3 line must be removed when control subscriber is ready
             
     def planForArmmove(self, userdata):
         """callback for jarvis_planner"""
