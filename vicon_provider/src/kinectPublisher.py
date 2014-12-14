@@ -10,8 +10,8 @@ import math
 
 class ViconPublisher:
     def __init__(self, host="10.0.0.102", port=800, \
-        x_VICON_name="Kinect:kinect-coords <t-X>", y_VICON_name="Kinect:kinect-coords <t-Y>", z_VICON_name="Kinect:kinect-coords <t-Z>", \
-        phi_VICON_name="Kinect:kinect-coords <a-X>", theta_VICON_name="Kinect:kinect-coords <a-Y>", psi_VICON_name="Kinect:kinect-coords <a-Z>"):
+        x_VICON_name="Kinect:kinect <t-X>", y_VICON_name="Kinect:kinect <t-Y>", z_VICON_name="Kinect:kinect <t-Z>", \
+        phi_VICON_name="Kinect:kinect <a-X>", theta_VICON_name="Kinect:kinect <a-Y>", psi_VICON_name="Kinect:kinect <a-Z>"):
    # def __init__(self, host="10.0.0.102", port=800, x_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-X>", y_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <t-Y>", theta_VICON_name="GPSReceiverHelmet-goodaxes:GPSReceiverHelmet01 <a-Z>"):
         
         """
@@ -65,6 +65,7 @@ class ViconPublisher:
 		yq = pose[5]/A*math.sin(A/2)
 		zq = pose[6]/A*math.sin(A/2)
 	    q = [xq,yq,zq,W]
+            #TODO add a filter
             br.sendTransform((pose[1],pose[2],pose[3]),
                     q,
                     rospy.Time.now(),  # should we be use vicon time instead?
@@ -86,7 +87,7 @@ class ViconPublisher:
         return array([t, x, y, z, phi, theta, psi])
 
 if __name__ == "__main__":
-    rospy.init_node('boardPublisher')
+    rospy.init_node('kinect_publisher')
     try:
         ViconPublisher()
     except:

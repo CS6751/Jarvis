@@ -121,7 +121,7 @@ include_directories(
 ## Declare a cpp executable
 # add_executable(jarvis_perception_node src/jarvis_perception_node.cpp)
 #add_executable(kinect_tf_broadcaster src/kinect_tf_broadcaster.cpp)
-#add_executable(vector_maker src/vector_maker.cpp)
+add_executable(vector_maker src/vector_maker.cpp)
 add_executable(board_publisher src/board_publisher.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -132,7 +132,7 @@ add_executable(board_publisher src/board_publisher.cpp)
 #   ${catkin_LIBRARIES}
 # )
 #target_link_libraries(kinect_tf_broadcaster ${catkin_LIBRARIES})
-#target_link_libraries(vector_maker ${catkin_LIBRARIES})
+target_link_libraries(vector_maker ${catkin_LIBRARIES})
 target_link_libraries(board_publisher ${catkin_LIBRARIES})
 #############
 ## Install ##

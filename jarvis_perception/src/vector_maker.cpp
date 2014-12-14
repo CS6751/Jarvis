@@ -25,7 +25,7 @@ int main( int argc, char** argv )
     tf::TransformBroadcaster broadcaster;
     // Set our initial shape type to be a cube
     uint32_t shape = visualization_msgs::Marker::CYLINDER;
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(50);
     while (ros::ok())
 
     {
