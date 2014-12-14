@@ -1,3 +1,0 @@
-<launch>
-    <node pkg="jarvis_pointcloud" name="cloud_of_interest" type="example" />
-</launch>
