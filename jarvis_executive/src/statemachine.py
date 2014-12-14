@@ -192,7 +192,7 @@ class Armmove(smach.State):
                 return 'armmove_done'
             
             self.timedelay += 1   
-            print self.timedelay
+            print self.counter, 'ARMMOVE ( time:',self.timedelay,')' 
             r.sleep()
 
     def userForArmmove(self, userdata):
