@@ -26,7 +26,7 @@ yp1 = []
 yp2 = []
 yp3 = []
 nnet = ''
-data = [1,0,0]
+data = [0,0,0]
 flag1 = 0
 flag2 = 0
 
@@ -78,7 +78,7 @@ def callback(msg):
         if max(dif) < threshold and classified==1:
             print 'low'
             classified = 0
-            predict = 0
+            #predict = 0
         if spark==0:
             if max(dif) > threshold:
                 buf.append(prev)
@@ -124,7 +124,7 @@ def classify(buf):
     pred = result[0]
     pred = pred[0]
     print result
-    if float(str(pred)) > 0.6 :
+    if float(str(pred)) > 0.65 :
         predict = 1
     else:
         predict = 2
