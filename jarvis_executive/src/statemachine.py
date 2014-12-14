@@ -51,7 +51,7 @@ class Stop(smach.State):
             self.transition = 1
             
         if userdata.id == 'grab' and self.transition == 0:
-            print 'Heard "Grab this!"'
+            print 'Heard "Grab!"'
             self.transition = 2
 
 
