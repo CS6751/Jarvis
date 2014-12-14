@@ -11,6 +11,7 @@ class  user_interface_pub(object):
     
     def __init__(self):
         print 'Start user_interface!'
+        rospy.on_shutdown(self.cleanup)
         self.pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
         r = rospy.Rate(10) # 10hz
         #num = 0
@@ -30,19 +31,22 @@ class  user_interface_pub(object):
         
         if userdata.data.find('come here') > -1:
             print 'heard come here!'
-            self.msg = GoalID()           #by putting it here it prevents the stored ids transimitted to statemachine
             self.msg.id = 'come_here'
         
         elif userdata.data.find('grab') > -1:
             print 'heard grab!'
-            self.msg = GoalID()
             self.msg.id = 'grab'
     
         elif userdata.data.find('stop') > -1:
             print 'heard stop!'
-            self.msg = GoalID()
             self.msg.id = 'stop'    
     
+    def cleanup(self):
+        print 'user interface exiting...'
+        command = GoalID()
+        rospy.info(command)
+        self.pub.publish(command)
+        
         '''
         if num == 20:
             toBasemove = GoalID(id = 'come_here')
