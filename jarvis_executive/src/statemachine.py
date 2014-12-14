@@ -287,7 +287,7 @@ def main():
 
     # Create a SMACH state machine
     #sm = smach.StateMachine(outcomes=['success', 'failure'])
-    sm = smach.StateMachine(outcomes=['ARMMOVE', 'failure'])
+    sm = smach.StateMachine(outcomes=['HOLD', 'failure'])
 
     
     # Open the container
