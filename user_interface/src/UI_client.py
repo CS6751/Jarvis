@@ -15,6 +15,7 @@ import tf
 from tf.transformations import euler_from_quaternion
 from numpy import *
 import matplotlib.pyplot as plt
+from math import sin, cos, atan2
 
 class UI_client:
 
@@ -27,6 +28,7 @@ class UI_client:
         self.msg = GoalID()
         self.newGrips = jarvis_perception.msg.GraspArray()
 
+        self.legalUtterances = ['upper','lower','top','bottom','back','front','near','far','rear','left','right','anywhere','center']
         self.lastUtterance = ''
         self.axisAlignedBox = ''
         self.person_trans = ''
@@ -58,12 +60,17 @@ class UI_client:
         #now, update the weights and publish the result
         r = rospy.Rate(10.0)
         while not rospy.is_shutdown():
-
             try:
                 (boardToPersonTranslationAll,boardToPersonRotationAll) = listener.lookupTransform('/board_tf', '/helmet', rospy.Time(0))
                 boardToPersonRotationAll = euler_from_quaternion(boardToPersonRotationAll)
-                self.boardToPersonRotation = boardToPersonRotationAll[2]
+                self.boardToPersonRotation = boardToPersonRotationAll[0]  # roll
+                self.boardToPersonAzimuth = boardToPersonRotationAll[2]  # yaw
+                # self.boardToPersonAzimuth = atan2(sin(boardToPersonRotationAll[2]), sin(boardToPersonRotationAll[1]))  # az = atan2(sin(yaw), sin(pitch))
+                self.boardToPersonElevation = boardToPersonRotationAll[1]  # pitch
                 print "Board rotation: ", boardToPersonRotationAll
+                print "   Roll (with x-axis perpendicular to board): ", self.boardToPersonRotation
+                print "   Azimuth: ", self.boardToPersonAzimuth
+                print "   Elevation: ", self.boardToPersonElevation
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
             # rospy.loginfo(gripsWithUpdatedWeights)
@@ -95,8 +102,11 @@ class UI_client:
                 plt.draw()
                 plt.clf()
 
-            pubgoal.publish(self.msg)
-            pubgrips.publish(self.newGrips)
+            try:
+                pubgoal.publish(self.msg)
+                pubgrips.publish(self.newGrips)
+            except:
+                rospy.loginfo("publish failed")
             r.sleep()
 
     def speechCb(self, msg):
@@ -109,6 +119,10 @@ class UI_client:
         # 2. grab this
         # 3. stop!
 
+        self.lastUtterance = 'right'
+        # self.boardToPersonRotation = random.rand() #0.0
+        # self.grips.grips.grasps[0].point.x = 0.1*random.rand()
+
         if msg.data.find("come here") > -1:
             self.msg.id = 'come_here'
 
@@ -119,15 +133,18 @@ class UI_client:
             self.msg.id = 'stop'
 
         # a locative keyword is found -- update the probabilities/weights
-        else:
+        elif any([self.lastUtterance.find(self.legalUtterances[i]) > -1 for i in range(len(self.legalUtterances))]):
+            print "yes"
             if self.axisAlignedBox:
-                # self.lastUtterance = 'right'
-                # self.boardToPersonRotation = random.rand() #0.0
-                # self.grips.grips.grasps[0].point.x = 0.1*random.rand()
                 print "board rotation relative to user: ", self.boardToPersonRotation
                 self.newGrips, self.likelihood, self.var = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.boardToPersonRotation)
             else:
                 self.newGrips = self.grips
+        else:
+            print "no"
+            # rospy.logwarn("I thought I heard a location keyword, but I did not understand it.")
+            raise RuntimeWarning("I thought I heard a location keyword, but I did not understand it.")
+            self.newGrips = self.grips
 
     def targetObjectCb(self, msg):
         # rospy.loginfo(msg)
