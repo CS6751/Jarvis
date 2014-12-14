@@ -160,14 +160,7 @@ class Armmove(smach.State):
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForArmmove)
                 pubPlan.publish(PlanCommand(plancommand = True))
                 rospy.Subscriber('PlanStatus_trial', PlanStatus, self.planForArmmove)
-            
-            elif self.transition == 4:
-                self.transition = -1
-                pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 4))
-                self.counter += 1
-                return 'armmove_done'
-                
+
             elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
@@ -187,8 +180,13 @@ class Armmove(smach.State):
                 pubCon.publish(Mode(mode = 3))
                 self.counter += 1
                 return 'armmove_failed'
-               
             
+             elif self.transition == 4:
+                self.transition = -1
+                pubPlan.publish(PlanCommand(plancommand = False))
+                pubCon.publish(Mode(mode = 4))
+                self.counter += 1
+                return 'armmove_done'   
             
             self.timedelay += 1   
             print self.counter, 'ARMMOVE ( time:',self.timedelay,')' 
@@ -225,7 +223,7 @@ class Armmove(smach.State):
             self.transition = 4
     '''
         
-'''
+
 class Hold(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['hold_failed','hold_stop','job_done','yes_adjustment'])
@@ -237,6 +235,8 @@ class Hold(smach.State):
         rospy.loginfo('Executing state HOLD')
         print 'The number of time this state is executing:',self.counter
         pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
+        pubCon.publish(Mode(mode = 5))
+
         r = rospy.Rate(10)
         if self.counter > 1:
             self.transition = 0
@@ -244,42 +244,65 @@ class Hold(smach.State):
         
         while not rospy.is_shutdown():
             if self.transition == 0:
-                pub.publish(Kill(kill = True))
+                pubCon.publish(Mode(mode = 5))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            
             elif self.transition == 1:
                 self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
                 self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
-                return 'initiation'
+                return 'hold_stop'
+            
             elif self.transition == 2:
                 self.transition = -1
                 self.counter += 1
-                return 'armmove' 
+                return 'hold_failed' 
+                
+            elif self.transition == 3:
+                self.transition = -1
+                self.counter += 1
+                return 'yes_adjustment'
+                
+            elif self.transition == 4:
+                self.transition = -1
+                self.counter += 1
+                return 'job_done'    
+                
             self.timedelay += 1   
-            print self.counter, 'STOP ( time:',self.timedelay,')'
+            print self.counter, 'HOLD ( time:',self.timedelay,')'
             r.sleep()
             
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here' and self.transition == 0:
-            print 'Heard "Come here!"'
+        if userdata.id == 'stop' and self.transition == 0:
+            print 'Heard "Stop!"'
             self.transition = 1
             
         if userdata.id == 'grab' and self.transition == 0:
             print 'Heard "Grab!"'
             self.transition = 2
+            
+        if userdata.id == 'adjust' and self.transition == 0:
+            print 'Heard "Adjust!"'
+            self.transition = 3
+        
+        if userdata.id == 'good job' and self.transition == 0:
+            print 'Heard "Good job!"'
+            self.transition = 4
 
 
 class Adjust(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['initiation','armmove'])
+        smach.State.__init__(self, outcomes=['adjust_stop','no_adjustment'])
         self.counter = 1
         self.transition = 0
         self.timedelay = 0
         
     def execute(self, userdata):
-        rospy.loginfo('Executing state STOP')
+        rospy.loginfo('Executing state ADJUST')
         print 'The number of time this state is executing:',self.counter
-        pub = rospy.Publisher('Kill', Kill, queue_size=10)
+        pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
+        pubCon.publish(Mode(mode = 6))
+
         r = rospy.Rate(10)
         if self.counter > 1:
             self.transition = 0
@@ -287,30 +310,34 @@ class Adjust(smach.State):
         
         while not rospy.is_shutdown():
             if self.transition == 0:
-                pub.publish(Kill(kill = True))
+                pubCon.publish(Mode(mode = 6))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            
             elif self.transition == 1:
                 self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
                 self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
-                return 'initiation'
+                return 'adjust_stop'
+            
             elif self.transition == 2:
                 self.transition = -1
                 self.counter += 1
-                return 'armmove' 
+                return 'no_adjustment' 
+                
             self.timedelay += 1   
-            print self.counter, 'STOP ( time:',self.timedelay,')'
+            print self.counter, 'ADJUST ( time:',self.timedelay,')'
             r.sleep()
             
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here' and self.transition == 0:
-            print 'Heard "Come here!"'
+        if userdata.id == 'stop' and self.transition == 0:
+            print 'Heard "Stop!"'
             self.transition = 1
             
-        if userdata.id == 'grab' and self.transition == 0:
-            print 'Heard "Grab!"'
+        if userdata.id == 'hold' and self.transition == 0:
+            print 'Heard "Hold!"'
             self.transition = 2
-'''
+            
+            
 
 # main
 def main():
@@ -318,7 +345,7 @@ def main():
 
     # Create a SMACH state machine
     #sm = smach.StateMachine(outcomes=['success', 'failure'])
-    sm = smach.StateMachine(outcomes=['HOLD', 'failure'])
+    sm = smach.StateMachine(outcomes=['success', 'failure'])
 
     
     # Open the container
@@ -326,17 +353,20 @@ def main():
         # Add states to the container
         smach.StateMachine.add('STOP', Stop(), 
                                transitions={'initiation':'BASEMOVE','armmove':'ARMMOVE'})
+        
         smach.StateMachine.add('BASEMOVE', Basemove(), 
                                transitions={'basemove_done':'STOP','basemove_failed':'failure'})
+        
         smach.StateMachine.add('ARMMOVE', Armmove(), 
                                transitions={'armmove_done':'HOLD','armmove_failed':'failure', 'armmove_stop':'STOP'})
-        '''
+        
         smach.StateMachine.add('HOLD', Hold(), 
                                transitions={'hold_failed':'ARMMOVE', 
                                'yes_adjustment':'ADJUST', 'hold_stop':'STOP', 'job_done':'success'})
+        
         smach.StateMachine.add('ADJUST', Adjust(), 
                                transitions={'adjust_stop':'STOP', 'no_adjustment':'HOLD'})
-        '''
+        
  
     # Execute SMACH plan
     outcome = sm.execute()
