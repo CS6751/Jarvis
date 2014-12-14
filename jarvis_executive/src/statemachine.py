@@ -149,7 +149,7 @@ class Armmove(smach.State):
         print 'The number of time this state is executing:',self.counter
         pubPlan = rospy.Publisher('PlanCommand', PlanCommand, queue_size=10)
         pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
-        r = rospy.Rate(10)
+        r = rospy.Rate(5)
         if self.counter > 1:
             self.timedelay = 0
             self.plantransition = False
@@ -196,7 +196,7 @@ class Armmove(smach.State):
     def userForArmmove(self, userdata):
         """callback for user_interface"""
     ### the following 3 line must be removed when control subscriber is ready
-        if userdata.id == 'ready':
+        if userdata.id == 'done' and (self.transition == 2):
             print 'arm successfully moved!'
             self.transition = 4            
 
