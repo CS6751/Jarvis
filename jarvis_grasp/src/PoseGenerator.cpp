@@ -2,8 +2,7 @@
 #include "geometry_msgs/Pose2D.h"
 #include "jarvis_grasp/goal_pose.h"
 #include "PoseGenerator.h"
-#include "geometry_msgs/PointStamped.h"
-#include "geometry_msgs/QuaternionStamped.h"
+#include "geometry_msgs/PoseStamped.h"
 #include "std_msgs/Header.h"
 #include <cmath>
 #include <tf/transform_broadcaster.h>
@@ -22,7 +21,7 @@ int main(int argc, char **argv) {
   // Broadcast tf frame
   static tf::TransformBroadcaster br;
   tf::Transform transform;
-  transform.setOrigin(tf::Vector3(0.0, 0.0, 0.0));
+  transform.setOrigin(tf::Vector3(0.2, 0.0, 0.0));
   br.sendTransform(tf::StampedTransform(transform, ros::Time::now(),
                                         "youbot", "arm_base"));
 
@@ -85,35 +84,26 @@ void PoseGenerator::loc_callback(const
   }
   jarvis_perception::GraspBox box = grasp_points->grasps[max_ind];
 
-  // Convert grasp point to KDL Frame
-  // Create KDL vector for point. NOTE: point frame should be
-  // transformed with TF first
-  geometry_msgs::PointStamped p_in;
+  // Convert grasp pose to PoseStamped and transform
+  geometry_msgs::PoseStamped p_in;
   p_in.header = grasp_points->header;
-  p_in.point = box.point;
-  geometry_msgs::PointStamped p_out;
-  tf_listener.transformPoint("arm_base", p_in, p_out);
+  p_in.pose.position = box.point;
+  p_in.pose.orientation = box.orientation;
+  geometry_msgs::PoseStamped p_out;
+  tf_listener.transformPose("arm_base", p_in, p_out);
 
   // Inverse Kinematics
-  geometry_msgs::Point p = p_out.point;
+  geometry_msgs::Point p = p_out.pose.position;
   float angles [5];
-  float j1 [3]; // x, y, z position of shoulder relative to base
-  float l1 = 1; // Length of first arm segment
-  float l2 = 1; // Length of second arm segment
+  float j1 [3] = {0.033, 0, 0.019}; // x, y, z position of shoulder relative to base
+  float l1 = 0.135; // Length of first arm segment
+  float l2 = 0.155; // Length of second arm segment
   angles[0] = atan2(p.y, p.x); // Base angle just points to grasp
   float x_hat = sqrt(p.x*p.x + p.y*p.y); // Projection of point on ground
   float a_ref = atan2(p.z-j1[2], x_hat-j1[0]); // Angle between j1 and goal
   angles[1] = a_ref - atan2(l2, l1);
   angles[2] = PI / 2;
-  angles[3] = a_ref - angles[2];
-
-  // Transform quaternion and calculate wrist angle
-  geometry_msgs::QuaternionStamped q_in;
-  q_in.header = grasp_points->header;
-  q_in.quaternion = box.orientation;
-  geometry_msgs::QuaternionStamped q_out;
-  tf_listener.transformQuaternion("arm_base", q_in, q_out);
-  // TODO: Calcualte wrist angle based on orientation
+  angles[3] = a_ref - (angles[1]+angles[2]);
 
   // NOTE: For now, base movement will be ignored, set all to zero
   geometry_msgs::Pose2D base_pose;
