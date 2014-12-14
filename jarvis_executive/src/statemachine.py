@@ -198,7 +198,8 @@ class Armmove(smach.State):
     ### the following 3 line must be removed when control subscriber is ready
         if (userdata.id == 'done') and (self.transition == 2):
             print 'arm successfully moved!'
-            self.transition = 4            
+            self.transition = 4 
+    ### the above 3 line must be removed when control subscriber is ready
 
         if userdata.id == 'stop' and (self.transition == 0 or self.transition == 2):
             print 'Heard "Stop!"'
@@ -214,76 +215,100 @@ class Armmove(smach.State):
         if userdata.PlanStatus and self.transition == 0:
             print 'Armmove plan is ready!"'
             self.transition = 2
-        
+    '''    
     def controlforArmmove(self, userdata):
         """callback for jarvis_controls"""
         if userdata.data == 'arm_control_done' and self.transition == 2:
             print 'arm successfully moved!'
             self.transition = 4
-      
-    ### the following 5 line must be removed when control subscriber is ready
-    #def done(self, userdata):
-    #    """callback for user_interface"""
-    #    if userdata.id == 'done' and (self.transition == 2):
-    #        print 'arm successfully moved!'
-    #        self.transition = 4            
-    ### the above 5 line must be removed when control subscriber is ready
+    '''
         
 '''
 class Hold(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['initiation','armmove'])
-        self.counter = 0
-
-    def execute(self, userdata):
-        pass
+        smach.State.__init__(self, outcomes=['hold_failed','hold_stop','job_done','yes_adjustment'])
+        self.counter = 1
+        self.transition = 0
+        self.timedelay = 0
         
-        rospy.loginfo('Executing state STOP')
-        pub = rospy.Publisher('Kill', Kill, queue_size=10)
+    def execute(self, userdata):
+        rospy.loginfo('Executing state HOLD')
+        print 'The number of time this state is executing:',self.counter
+        pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
         r = rospy.Rate(10)
-    
+        if self.counter > 1:
+            self.transition = 0
+            self.timedelay = 0
+        
         while not rospy.is_shutdown():
-            pub.publish(Kill(kill = True))
-            rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            if self.transition == 0:
+                pub.publish(Kill(kill = True))
+                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            elif self.transition == 1:
+                self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
+                self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
+                return 'initiation'
+            elif self.transition == 2:
+                self.transition = -1
+                self.counter += 1
+                return 'armmove' 
+            self.timedelay += 1   
+            print self.counter, 'STOP ( time:',self.timedelay,')'
             r.sleep()
-
+            
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here':
+        if userdata.id == 'come_here' and self.transition == 0:
             print 'Heard "Come here!"'
-            return 'initiation'
-        elif userdata.id == 'grab':
-            print 'Heard "Grab this!"'
-            return 'armmove'
-        
+            self.transition = 1
+            
+        if userdata.id == 'grab' and self.transition == 0:
+            print 'Heard "Grab!"'
+            self.transition = 2
+
 
 class Adjust(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['initiation','armmove'])
-        self.counter = 0
-
-    def execute(self, userdata):
-        pass
+        self.counter = 1
+        self.transition = 0
+        self.timedelay = 0
         
+    def execute(self, userdata):
         rospy.loginfo('Executing state STOP')
+        print 'The number of time this state is executing:',self.counter
         pub = rospy.Publisher('Kill', Kill, queue_size=10)
         r = rospy.Rate(10)
-    
+        if self.counter > 1:
+            self.transition = 0
+            self.timedelay = 0
+        
         while not rospy.is_shutdown():
-            pub.publish(Kill(kill = True))
-            rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            if self.transition == 0:
+                pub.publish(Kill(kill = True))
+                rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
+            elif self.transition == 1:
+                self.transition = -1  # disable the callback after the transition. callback would work if this value = 0
+                self.counter += 1     # keeps track of number of state execution and also set self.transition back to 0 
+                return 'initiation'
+            elif self.transition == 2:
+                self.transition = -1
+                self.counter += 1
+                return 'armmove' 
+            self.timedelay += 1   
+            print self.counter, 'STOP ( time:',self.timedelay,')'
             r.sleep()
-
+            
     def userForStop(self, userdata):
         """callback for user_interface"""
-        if userdata.id == 'come_here':
+        if userdata.id == 'come_here' and self.transition == 0:
             print 'Heard "Come here!"'
-            return 'initiation'
-        elif userdata.id == 'grab':
-            print 'Heard "Grab this!"'
-            return 'armmove'
-        '''
-
+            self.transition = 1
+            
+        if userdata.id == 'grab' and self.transition == 0:
+            print 'Heard "Grab!"'
+            self.transition = 2
+'''
 
 # main
 def main():
