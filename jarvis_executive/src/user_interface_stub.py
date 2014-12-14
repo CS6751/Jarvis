@@ -13,7 +13,7 @@ class  user_interface_pub(object):
         print 'Start user_interface!'
         rospy.on_shutdown(self.cleanup)
         self.pub = rospy.Publisher('robot_cmd_trial', GoalID, queue_size=10)
-        r = rospy.Rate(10) # 10hz
+        r = rospy.Rate(5) # 10hz
         #num = 0
         
         self.msg = GoalID()
@@ -47,7 +47,7 @@ class  user_interface_pub(object):
             
         elif userdata.data.find('good job') > -1:
             print 'heard good job!'
-            self.msg.id = 'good job' 
+            self.msg.id = 'good_job' 
             
         elif userdata.data.find('adjust') > -1:
             print 'heard adjust!'
