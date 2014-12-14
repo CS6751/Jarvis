@@ -190,7 +190,23 @@ class Armmove(smach.State):
             
             self.timedelay += 1   
             print self.counter, 'ARMMOVE ( time:',self.timedelay,')' 
-            print self.transition
+            
+            # The following tells which transition is on 
+            if self.transition == 0:
+                print 'Plan Ready?'
+                
+            if self.transition == 1:
+                print 'Heard "Stop!"'
+                
+            if self.transition == 2:
+                print 'Plan Ready!'
+                
+            if self.transition == 3:
+                print 'Failure!'
+                
+            if self.transition == 0:
+                print 'Arm Moved!'
+            
             r.sleep()
 
     def userForArmmove(self, userdata):
