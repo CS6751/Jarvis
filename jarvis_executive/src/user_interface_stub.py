@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # license from cornell university CS 6751
 
+import roslib; roslib.load_manifest('pocketsphinx')
 import rospy
 from std_msgs.msg import String
 from actionlib_msgs.msg import GoalID
