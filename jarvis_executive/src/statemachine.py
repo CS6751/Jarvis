@@ -201,7 +201,7 @@ class Armmove(smach.State):
             print 'Heard "Stop!"'
             self.transition = 1
     ### the following 3 line must be removed when control subscriber is ready
-        elif userdata.id == 'done' and (self.transition == 2):
+        if userdata.id == 'done' and (self.transition == 2):
             print 'arm successfully moved!'
             self.transition = 4            
     ### the above 3 line must be removed when control subscriber is ready
@@ -215,7 +215,7 @@ class Armmove(smach.State):
             print 'Armmove plan is ready!"'
             self.transition = 2
             
-        elif (self.counter == 3) and self.transition == 0:  # armmove performing 3 times is considered failure
+        if (self.counter == 3) and self.transition == 0:  # armmove performing 3 times is considered failure
             print 'ARMMOVE State reached maximum number of time... Plan Failed!'
             self.transition = 3
         
