@@ -49,7 +49,7 @@ class CloudDrawer
 	tf_filter_ = new tf::MessageFilter<sensor_msgs::PointCloud2>(point_sub_, tf_, target_frame_, 10);
 	tf_filter_->registerCallback( boost::bind(&CloudDrawer::cloud_cb, this, _1) );
 	pub_ = n_.advertise<sensor_msgs::PointCloud2> ("output" , 1);
-	grip_pub_ = n_.advertise<geometry_msgs::PoseStamped> ("test_grip", 1);
+	grip_pub_ = n_.advertise<geometry_msgs::PoseStamped> ("grasps", 1);
     } ;
 
     private:
@@ -239,7 +239,7 @@ class CloudDrawer
 		    pcl::PointCloud<pcl::PointXYZ>::Ptr pass_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 		    pcl::PassThrough<pcl::PointXYZ> pass;
 		    pass.setInputCloud(temp_cloud);
-		    pass.setFilterFieldName("z");
+		    pass.setFilterFieldName("x");
 		    pass.setFilterLimits(-0.1,0.1);
 		    pass.filter(*pass_cloud);
 		    pass.setInputCloud(pass_cloud);
@@ -250,7 +250,12 @@ class CloudDrawer
 		    pass.setFilterFieldName("z");
 		    pass.setFilterLimits(-0.1,0.1);
 		    pass.filter(*pass_cloud);
-
+		    // Make sure the passthrough filter found some points
+		    if (pass_cloud->points.size() < 3)
+		    {
+			ROS_INFO("Empty target area");
+			return;
+		    }
 
 		    pcl::PointCloud<pcl::PointXYZ>::Ptr filt_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 		    /////////////////////
@@ -427,7 +432,7 @@ class CloudDrawer
 
 
       pcl::toROSMsg(*filt_cloud,output);
-
+    // pcl::toROSMsg(*pass_cloud,output);
 	pub_.publish(output);
 
 	};

@@ -24,13 +24,13 @@ def usage():
 def talker():
     pub = rospy.Publisher('grip_viz', PoseArray, queue_size = 10)
     rospy.init_node('grip_viz_publisher', anonymous = True)
-    rate = rospy.Rate(1)
+    rate = rospy.Rate(10)
     grip_num = 0;
     while not rospy.is_shutdown():
         poses = geometry_msgs.msg.PoseArray()
         grips = return_grips_client()
         
-        poses.header.frame_id = "/board_tf"
+        poses.header.frame_id = grips.header.frame_id
         for i in range(0,len(grips.grasps)):
             pose = geometry_msgs.msg.Pose()
             pose.position = grips.grasps[i].point

@@ -1,6 +1,7 @@
 <!-- see http://wiki.ros.org/ROS/Tutorials/Roslaunch%20tips%20for%20larger%20projects -->
 <launch>
     <!-- put your launch files here -->
+    <include file="$(find vicon_provider)/launch/vicon.launch"/>
     <include file="$(find jarvis_perception)/launch/perception.launch"/>
     <include file="$(find jarvis_grasp)/launch/grasp_stub.launch" />
     <include file="$(find user_interface)/launch/user_interface.launch"/>

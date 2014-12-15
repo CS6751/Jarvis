@@ -5,5 +5,5 @@
     <node pkg="openni_tracker" type="openni_tracker" name="body_tracker"/>
     <node pkg="jarvis_perception" type="vector_maker" name="vector_maker"/>
     <node pkg="rviz" type="rviz" name="rviz" />
-    <!--    <node pkg="jarvis_pointcloud" type="example" name="pc_of_interest" />-->
+    <node pkg="jarvis_pointcloud" type="segmenter" name="segmenter" />
 </launch>
