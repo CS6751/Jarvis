@@ -1,4 +1,7 @@
 <launch>
+    <env name="ROS_MASTER_URI" value="http://10.0.0.128:11311"/>
+    <env name="ROS_IP" value="10.0.0.109"/>
+    <include file="$(find vicon_provider)/launch/vicon.launch" />
     <include file="$(find openni_launch)/launch/openni.launch" /> 
     <node pkg="jarvis_perception" name="object_publisher" type="object_publisher.py"/>
     <node pkg="jarvis_perception" name="grip_server" type="grip_server.py"/>
