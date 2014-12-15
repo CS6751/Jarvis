@@ -271,7 +271,7 @@ class Hold(smach.State):
         pubCon2 = rospy.Publisher('Mode', Mode, queue_size=10)
         pubCon = rospy.Publisher('gripper', Bool, queue_size=10)
         pubCon2.publish(Mode(mode = 5))
-        pubCon.publish(Bool(data = True))
+        pubCon.publish(Bool(data = False))
 
         r = rospy.Rate(10)
         if self.counter > 1:
@@ -281,7 +281,7 @@ class Hold(smach.State):
         while not rospy.is_shutdown():
             if self.transition == 0:
                 pubCon2.publish(Mode(mode = 5))
-                pubCon.publish(Bool(data = True))
+                pubCon.publish(Bool(data = False))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             
             elif self.transition == 1:
