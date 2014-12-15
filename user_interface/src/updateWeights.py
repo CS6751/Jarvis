@@ -75,10 +75,10 @@ def updateWeights(grips, utterance, axisAlignedBox, boardRotation):
         angleInPersonFrame = pi
     elif utterance.find("right") > -1:
         angleInPersonFrame = 1e-5
-    elif utterance.find("near") > -1 or utterance.find("front") or utterance.find("bottom") > -1 or utterance.find("lower") > -1:
+    elif utterance.find("near") > -1 or utterance.find("front") > -1 or utterance.find("bottom") > -1 or utterance.find("lower") > -1:
         angleInPersonFrame = -0.5*pi
         elevationAngle = 0.5*pi
-    elif utterance.find("far") > -1 or utterance.find("rear") > -1 or utterance.find("back") > -1 or utterance.find("top") > -1 or utterance.find("upper"):
+    elif utterance.find("far") > -1 or utterance.find("rear") > -1 or utterance.find("back") > -1 or utterance.find("top") > -1 or utterance.find("upper") > -1:
         angleInPersonFrame = 0.5*pi
         elevationAngle = 0.5*pi
     else:
@@ -92,10 +92,15 @@ def updateWeights(grips, utterance, axisAlignedBox, boardRotation):
             boardRotationRoll = 0
 
         c = cos(angleInPersonFrame+boardRotationRoll)
-        s = -sin(angleInPersonFrame+boardRotationRoll)
-        if (boardRotationYaw > 0.5*pi and boardRotationYaw < 0.75*pi) or (boardRotationYaw < -0.5*pi and boardRotationYaw > -0.75*pi):
+        s = sin(angleInPersonFrame+boardRotationRoll)
+        print "roll: ", boardRotationRoll
+        print "yaw: ", boardRotationYaw
+        print "pitch: ", boardRotationPitch
+        if (boardRotationYaw > 0.5*pi and boardRotationYaw < 1.5*pi) or (boardRotationYaw < -0.5*pi and boardRotationYaw > -1.5*pi):
+            # print "yaw above/below limit"
             c = -c
         if (boardRotationPitch > 0.5*pi and boardRotationPitch < 0.75*pi) or (boardRotationPitch < -0.5*pi and boardRotationPitch > -0.75*pi):
+            # print "pitch above/below limit"
             s = -s
 
         likelihood['BoxTop']        = max(s, 0)**2

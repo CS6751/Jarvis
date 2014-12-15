@@ -42,6 +42,7 @@ class UI_client:
         try:
             grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
             self.grips = grip_server()
+            print self.grips
             pubgrips = rospy.Publisher('return_grips', jarvis_perception.msg.GraspArray, queue_size=10)
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
@@ -109,7 +110,7 @@ class UI_client:
         self.boardToPersonAzimuth = self.boardToPersonRotationAll[2]  # yaw
         # self.boardToPersonAzimuth = atan2(sin(boardToPersonRotationAll[2]), sin(boardToPersonRotationAll[1]))  # az = atan2(sin(yaw), sin(pitch))
         self.boardToPersonElevation = self.boardToPersonRotationAll[1]  # pitch
-        print "Board rotation: ", self.boardToPersonRotationAll
+        # print "Board rotation: ", self.boardToPersonRotationAll
         # print "   Roll (with x-axis perpendicular to board): ", self.boardToPersonRotation
         # print "   Azimuth: ", self.boardToPersonAzimuth
         # print "   Elevation: ", self.boardToPersonElevation
@@ -126,7 +127,7 @@ class UI_client:
         # 2. grab this
         # 3. stop!
 
-        self.lastUtterance = 'right'
+        # self.lastUtterance = 'right'
         # self.boardToPersonRotation = random.rand() #0.0
         # self.grips.grips.grasps[0].point.x = 0.1*random.rand()
 

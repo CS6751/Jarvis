@@ -1,17 +1,21 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 
 import sys
 import rospy
+from jarvis_perception import *
 import geometry_msgs
-from user_interface.srv import *
-from user_interface import *
+from jarvis_perception.srv import *
+import jarvis_perception.msg
+from visualization_msgs.msg import Marker
+from std_msgs.msg import String
+
 
 def grip_loc_client():
-    rospy.wait_for_service('grip_loc')
+    rospy.wait_for_service('return_grips')
     try:
-        grip_loc = rospy.ServiceProxy('grip_loc', GripLoc)
-        response = grip_loc()
-        return response.grips
+        grip_server = rospy.ServiceProxy('return_grips',ReturnGrips)
+        self.grips = grip_server()
+        print self.grips
     except rospy.ServiceException, e:
         print "Service call failed: %s"%e
 
