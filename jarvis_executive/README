@@ -1,0 +1,2 @@
+Packages needed: <smach, smach_ros, smach_msgs>
+sudo apt-get install ros-<distro>-<package-name>
