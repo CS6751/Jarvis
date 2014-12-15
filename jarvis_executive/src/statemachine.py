@@ -5,6 +5,7 @@ import rospy
 import smach
 import smach_ros
 from std_msgs.msg import String
+from std_msgs.msg import Bool
 from actionlib_msgs.msg import GoalID
 from human_intent.msg import Intent
 from jarvis_planner.msg import PlanStatus
@@ -67,7 +68,9 @@ class Basemove(smach.State):
         rospy.loginfo('Executing state BASEMOVE')
         print 'The number of time this state is executing:',self.counter
         pubPlan = rospy.Publisher('PlanCommand', PlanCommand, queue_size=10)
-        pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
+        #pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
+        pubCon = rospy.Publisher('gripper', Bool, queue_size=10)
+
         r = rospy.Rate(10)
         if self.counter > 1:
             self.timedelay = 0
@@ -88,7 +91,8 @@ class Basemove(smach.State):
             elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 1))
+                #pubCon.publish(Mode(mode = 1))
+                pubCon.publish(Bool(data = False))
                 self.counter += 1
                 return 'basemove_done'
                
@@ -97,20 +101,26 @@ class Basemove(smach.State):
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForBasemove)
                 pubPlan.publish(PlanCommand(plancommand = False))
                 rospy.Subscriber('ControlStatus_trial', String, self.controlforBasemove)
-                pubCon.publish(Mode(mode = 2))
+                #pubCon.publish(Mode(mode = 2))
             
             # when plan fails
             elif self.transition == 3: 
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 3))
+                #pubCon.publish(Mode(mode = 3))
+                pubCon.publish(Bool(data = False))
+                pubCon.publish(Bool(data = True))
+                pubCon.publish(Bool(data = False))
+                pubCon.publish(Bool(data = True))
+                pubCon.publish(Bool(data = False))
+                pubCon.publish(Bool(data = True))
                 self.counter += 1
                 return 'basemove_failed'
             
             # base finishes moving
             elif self.transition == 4:
                 self.transition = -1
-                pubCon.publish(Mode(mode = 4))
+                #pubCon.publish(Mode(mode = 4))
                 self.counter += 1
                 return 'basemove_done'
             self.timedelay += 1   
@@ -148,7 +158,9 @@ class Armmove(smach.State):
         rospy.loginfo('Executing state ARMMOVE')
         print 'The number of time this state is executing:',self.counter
         pubPlan = rospy.Publisher('PlanCommand', PlanCommand, queue_size=10)
-        pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
+        #pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
+        pubCon = rospy.Publisher('gripper', Bool, queue_size=10)
+
         r = rospy.Rate(10)
         if self.counter > 1:
             self.timedelay = 0
@@ -164,7 +176,8 @@ class Armmove(smach.State):
             elif self.transition == 1:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 1))
+                #pubCon.publish(Mode(mode = 1))
+                pubCon.publish(Bool(data = False))
                 self.counter += 1
                 return 'armmove_stop'
                
@@ -172,19 +185,25 @@ class Armmove(smach.State):
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForArmmove)
                 pubPlan.publish(PlanCommand(plancommand = False))
                 #rospy.Subscriber('ControlStatus_trial', String, self.controlforArmmove)   # resumes when control works
-                pubCon.publish(Mode(mode = 2))
+                #pubCon.publish(Mode(mode = 2))
                 
             elif self.transition == 3: 
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 3))
+                #pubCon.publish(Mode(mode = 3))
+                pubCon.publish(Bool(data = False))
+                pubCon.publish(Bool(data = True))
+                pubCon.publish(Bool(data = False))
+                pubCon.publish(Bool(data = True))
+                pubCon.publish(Bool(data = False))
+                pubCon.publish(Bool(data = True))
                 self.counter += 1
                 return 'armmove_failed'
             
             elif self.transition == 4:
                 self.transition = -1
                 pubPlan.publish(PlanCommand(plancommand = False))
-                pubCon.publish(Mode(mode = 4))
+                #pubCon.publish(Mode(mode = 4))
                 self.counter += 1
                 return 'armmove_done'   
             
@@ -249,8 +268,10 @@ class Hold(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state HOLD')
         print 'The number of time this state is executing:',self.counter
-        pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
-        pubCon.publish(Mode(mode = 5))
+        pubCon2 = rospy.Publisher('Mode', Mode, queue_size=10)
+        pubCon = rospy.Publisher('gripper', Bool, queue_size=10)
+        pubCon2.publish(Mode(mode = 5))
+        pubCon.publish(Bool(data = True))
 
         r = rospy.Rate(10)
         if self.counter > 1:
@@ -259,7 +280,8 @@ class Hold(smach.State):
         
         while not rospy.is_shutdown():
             if self.transition == 0:
-                pubCon.publish(Mode(mode = 5))
+                pubCon2.publish(Mode(mode = 5))
+                pubCon.publish(Bool(data = True))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             
             elif self.transition == 1:
@@ -315,8 +337,10 @@ class Adjust(smach.State):
     def execute(self, userdata):
         rospy.loginfo('Executing state ADJUST')
         print 'The number of time this state is executing:',self.counter
-        pubCon = rospy.Publisher('Mode', Mode, queue_size=10)
-        pubCon.publish(Mode(mode = 6))
+        pubCon2 = rospy.Publisher('Mode', Mode, queue_size=10)
+        pubCon = rospy.Publisher('gripper', Bool, queue_size=10)
+        pubCon2.publish(Mode(mode = 6))
+        pubCon.publish(Bool(data = True))
 
         r = rospy.Rate(10)
         if self.counter > 1:
@@ -325,7 +349,7 @@ class Adjust(smach.State):
         
         while not rospy.is_shutdown():
             if self.transition == 0:
-                pubCon.publish(Mode(mode = 6))
+                pubCon2.publish(Mode(mode = 6))
                 rospy.Subscriber('robot_cmd_trial', GoalID, self.userForStop)
             
             elif self.transition == 1:
