@@ -7,13 +7,14 @@ import numpy as np
 import cybrain as cb
 from std_msgs.msg import String
 from std_msgs.msg import Float64
+import copy
 #import matplotlib.pyplot as plt
 
 buf = []
 prev = []
 curr = []
-buflength = 15
-threshold = 0.003
+buflength = 150
+threshold = 0.002
 # three flags
 spark = 0
 moving = 0
@@ -26,6 +27,8 @@ yp2 = []
 yp3 = []
 nnet = ''
 data = [0,0,0]
+flag1 = 0
+flag2 = 0
 
 def prediction():
 
@@ -51,41 +54,47 @@ def prediction():
     rospy.spin()
 
 def callback1(msg):
-    global data
-    data[0] = msg
+    global data, flag1
+    data[0] = msg.data
+    flag1 = 1
 
 def callback2(msg):
-    global data
-    data[1] = msg
+    global data, flag1, flag2
+    if flag1==1:
+        flag1 = 0
+        flag2 = 1
+        data[1] = msg.data
 
 def callback(msg):
-    global buf, prev, curr, spark, predict, classified, data
+    global buf, prev, curr, spark, predict, classified, data, flag2
     # if msg.name[0]=='arm_joint_1':
     # data = msg.position
-    data[2] = msg
-    curr = data
-    dif = diff(curr,prev)
-    # print 'classified: ',classified, 'diff: ', dif
-    if max(dif) < threshold and classified==1:
-        print 'low'
-        classified = 0
-        predict = 0
-    if spark==0:
-        if max(dif) > threshold:
-            buf.append(prev)
+    if flag2==1:
+        flag2 = 0
+        data[2] = msg.data
+        curr = copy.copy(data)
+        dif = diff(curr,prev)
+        # print 'classified: ',classified, 'diff: ', dif
+        if max(dif) < threshold and classified==1:
+            print 'low'
+            classified = 0
+            #predict = 0
+        if spark==0:
+            if max(dif) > threshold:
+                buf.append(prev)
+                buf.append(curr)
+                spark = 1
+                predict = 0
+        else:
             buf.append(curr)
-            spark = 1
-            predict = 0
-    else:
-        buf.append(curr)
-        if len(buf) == buflength:
-            if classified == 0:
-                classify(buf)
-                classified = 1
-            buf = []
-            spark = 0
-        total = totalrow(buf)
-    prev = curr
+            if len(buf) == buflength:
+                if classified == 0:
+                    classify(buf)
+                    classified = 1
+                buf = []
+                spark = 0
+            total = totalrow(buf)
+        prev = curr
 
 def diff(v1, v2):
     if not v1 or not v2:
@@ -108,37 +117,14 @@ def classify(buf):
     global predict, nnet
 
     print 'doing classificosition'
-    data[2] = msg
-    curr = data
-    dif = diff(curr,prev)
-    # print 'classified: ',classified, 'diff: ', dif
-    if max(dif) < threshold and classified==1:
-        print 'low'
-        classified = 0
-        predict = 0
-    if spark==0:
-        if max(dif) > threshold:
-            buf.append(prev)
-            buf.append(curr)
-            spark = 1
-            predict = 0
-    else:
-        buf.append(curr)
-        if len(buf) == buflength:
-            if classified == 0:
-                classify(buf)
-                classified = 1
-            buf = []
-            spark = 0
-        total = totalrow(buf)
-    prev = curration
+   
     testX = np.array(extractfeatures(buf))
   
     result = nnet.activateWith(testX, return_value= True)
     pred = result[0]
     pred = pred[0]
     print result
-    if float(str(pred)) > 0.5 :
+    if float(str(pred)) > 0.65 :
         predict = 1
     else:
         predict = 2
@@ -193,7 +179,7 @@ def trainNetwork():
     trainX = []
     trainY = []
 
-    file = open('testdata.txt')
+    file = open('finaldata.txt')
     for line in file:
         data = []
         for d in line.split(','):
@@ -202,12 +188,14 @@ def trainNetwork():
         trainX.append(data)
     file.close()
 
-    file = open('testout.txt')
+    file = open('finalout.txt')
     for line in file:
         data = []
         for d in line.split(','):
             if d != '\n':
-                data.append(float(d))
+		if float(d)==2:
+			data.append(0)
+                else: data.append(float(d))
         trainY.append(data)
     file.close()
 
@@ -218,7 +206,7 @@ def trainNetwork():
 
     #CREATE LAYERS
     Lin = cb.Layer(12)
-    Lhidden = cb.Layer( 10, cb.LogisticNeuron)
+    Lhidden = cb.Layer( 12, cb.LogisticNeuron)
     Lout = cb.Layer( 1, cb.LogisticNeuron)
     bias = cb.Layer( 1, cb.BiasUnit)
 

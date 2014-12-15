@@ -50,8 +50,9 @@ class UI_client:
 
         #Initialize the plot
         plt.ion()
-        fig = plt.figure()
+        fig = plt.figure(figsize=(8, 10))
         plthdl, = plt.plot([],[])
+        plt.axis('equal')
 
         pubgoal = rospy.Publisher('robot_cmd', GoalID)
         rospy.Subscriber('recognizer/output', String, self.speechCb)
@@ -62,15 +63,8 @@ class UI_client:
         while not rospy.is_shutdown():
             try:
                 (boardToPersonTranslationAll,boardToPersonRotationAll) = listener.lookupTransform('/board_tf', '/helmet', rospy.Time(0))
-                boardToPersonRotationAll = euler_from_quaternion(boardToPersonRotationAll)
-                self.boardToPersonRotation = boardToPersonRotationAll[0]  # roll
-                self.boardToPersonAzimuth = boardToPersonRotationAll[2]  # yaw
-                # self.boardToPersonAzimuth = atan2(sin(boardToPersonRotationAll[2]), sin(boardToPersonRotationAll[1]))  # az = atan2(sin(yaw), sin(pitch))
-                self.boardToPersonElevation = boardToPersonRotationAll[1]  # pitch
-                print "Board rotation: ", boardToPersonRotationAll
-                print "   Roll (with x-axis perpendicular to board): ", self.boardToPersonRotation
-                print "   Azimuth: ", self.boardToPersonAzimuth
-                print "   Elevation: ", self.boardToPersonElevation
+                self.boardToPersonRotationAll = euler_from_quaternion(boardToPersonRotationAll)
+                self.boardToPersonRotationAll = self.alignAxes()
             except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                 continue
             # rospy.loginfo(gripsWithUpdatedWeights)
@@ -79,9 +73,9 @@ class UI_client:
             #rospy.loginfo(self.msg)
 
             if plotting and not self.likelihood == None:
-                xspan = self.axisAlignedBox.scale.y
-                yspan = self.axisAlignedBox.scale.z
-                xcent = self.axisAlignedBox.pose.position.y
+                xspan = self.axisAlignedBox.scale.z  # TODO: reversed????
+                yspan = self.axisAlignedBox.scale.y
+                xcent = -self.axisAlignedBox.pose.position.y
                 ycent = self.axisAlignedBox.pose.position.z
 
                 oldGrips = self.grips.grips.grasps
@@ -94,9 +88,10 @@ class UI_client:
                 for j, name in enumerate(self.likelihood):
                     z += self.likelihood[name] * self.var[name].pdf(posArray)
                 plt.pcolor(x, y, z, cmap='spectral')
+                plt.axis('equal')
                 for i in range(len(oldGrips)):
-                    xgrip = self.newGrips.grasps[i].point.y
-                    ygrip = self.newGrips.grasps[i].point.z
+                    xgrip = self.newGrips.grasps[i].point.z
+                    ygrip = -self.newGrips.grasps[i].point.y
                     weight = self.newGrips.grasps[i].weight
                     plt.plot([xgrip, xgrip], [ygrip, ygrip], linestyle='None', marker='o', markerfacecolor='blue', markersize=36*weight)
                 plt.draw()
@@ -109,10 +104,22 @@ class UI_client:
                 rospy.loginfo("publish failed")
             r.sleep()
 
+    def alignAxes(self):
+        self.boardToPersonRotation = self.boardToPersonRotationAll[0]  # roll
+        self.boardToPersonAzimuth = self.boardToPersonRotationAll[2]  # yaw
+        # self.boardToPersonAzimuth = atan2(sin(boardToPersonRotationAll[2]), sin(boardToPersonRotationAll[1]))  # az = atan2(sin(yaw), sin(pitch))
+        self.boardToPersonElevation = self.boardToPersonRotationAll[1]  # pitch
+        print "Board rotation: ", self.boardToPersonRotationAll
+        # print "   Roll (with x-axis perpendicular to board): ", self.boardToPersonRotation
+        # print "   Azimuth: ", self.boardToPersonAzimuth
+        # print "   Elevation: ", self.boardToPersonElevation
+
+        boardToPersonRotationAll = self.boardToPersonRotationAll
+        return boardToPersonRotationAll
+
     def speechCb(self, msg):
         rospy.loginfo(msg.data)
         self.lastUtterance = msg.data
-        # print "Hello!!!"
 
         # a command keyword is found -- update the goalid
         # 1. come here
@@ -134,14 +141,12 @@ class UI_client:
 
         # a locative keyword is found -- update the probabilities/weights
         elif any([self.lastUtterance.find(self.legalUtterances[i]) > -1 for i in range(len(self.legalUtterances))]):
-            print "yes"
             if self.axisAlignedBox:
                 print "board rotation relative to user: ", self.boardToPersonRotation
-                self.newGrips, self.likelihood, self.var = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.boardToPersonRotation)
+                self.newGrips, self.likelihood, self.var = updateWeights.updateWeights(self.grips, self.lastUtterance, self.axisAlignedBox, self.boardToPersonRotationAll)
             else:
                 self.newGrips = self.grips
         else:
-            print "no"
             # rospy.logwarn("I thought I heard a location keyword, but I did not understand it.")
             raise RuntimeWarning("I thought I heard a location keyword, but I did not understand it.")
             self.newGrips = self.grips
